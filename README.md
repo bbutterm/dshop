@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Закупка — опт у дома
 
-## Getting Started
+Рабочий прототип сервиса: покупатель заказывает продукты у дистрибьютора и забирает их в магазине у дома по цене дистрибьютора. Заказ едет с обычной поставкой, магазин выдаёт его по коду.
 
-First, run the development server:
+- **Приложение** — `/` (вход в демо), четыре роли: покупатель, магазин, дистрибьютор, платформа.
+- **Презентация для инвесторов** — `/pitch` (статичный HTML, `public/pitch/index.html`, работает и без интернета; ←/→ для навигации, печать в PDF из браузера).
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Деплой на Vercel — без настроек: импортировать репозиторий, фреймворк Next.js определится сам.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Как показать демо
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. На главной у каждой роли есть иконка ↗ — откройте покупателя, дистрибьютора и магазин в трёх вкладках. Сессия хранится на вкладку, поэтому в соседних вкладках можно быть разными людьми.
+2. **Покупатель** (Анна): корзина уже собрана → «Оформить» → «Перейти к оплате» → «Оплатить» (тестовая страница эквайринга).
+3. **Дистрибьютор** (Сергей): во вкладке приходит уведомление о новом заказе → «Подтвердить» (можно уменьшить количество — покупателю посчитается возврат) → «Сборка и рейсы» → «Отметить все собранными» → «Отправить рейс». Маркировку можно распечатать.
+4. **Магазин** (Татьяна Ивановна): «Приёмка» → «Принять все» или скан маркировки (`DP-1047`) с отметкой недовоза → покупатель получает код.
+5. **Магазин** → «Выдача»: ввести 6-значный код с экрана покупателя (или «Сканировать QR (демо)») → «Выдать».
+6. **Платформа**: метрики пилота из бизнес-плана, участники, привязка продавцов к магазинам, споры.
 
-## Learn More
+Переключатель «Роль» в шапке любого раздела — вход под другой ролью, сброс демо-данных и выход.
 
-To learn more about Next.js, take a look at the following resources:
+## Что настоящее, а что заглушка
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Работает | Заглушка |
+| --- | --- |
+| Полный цикл статусов заказа, проверки переходов | Оплата (страница эквайринга имитируется) |
+| Корзина на каждого поставщика, минималка, даты привоза по графику | СМС с кодом входа (подходит любой код) |
+| Подтверждение по позициям, недовоз, возвраты, невыкуп, продление хранения | Чеки облачной кассы (номер генерируется) |
+| Уведомления всем сторонам в реальном времени между вкладками | Настоящий сканер QR камерой |
+| QR-код выдачи и штрихкод Code 128 маркировки (сканируются) | Хранение данных — localStorage браузера |
+| Загрузка прайса из Excel (.xlsx) и CSV, выгрузка отчётов в CSV | |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Устройство
 
-## Deploy on Vercel
+```
+src/lib/types.ts        доменная модель (повторяет схему БД)
+src/lib/engine.ts       правила заказа: статусы, уведомления, возвраты — чистые функции
+src/lib/seed.ts         демо-данные: Брянск, 2 дистрибьютора, 4 магазина, история за 6 недель
+src/lib/data/actions.ts реестр команд + интерфейс DataSource
+src/lib/data/local.ts   источник данных на localStorage + BroadcastChannel
+src/lib/data/provider.tsx React-контекст, сессия, тосты, useAction
+src/app/buyer           покупатель (мобильный интерфейс)
+src/app/store           продавец магазина (телефон/планшет)
+src/app/distributor     веб-кабинет дистрибьютора
+src/app/admin           админка платформы
+supabase/               схема, RPC и справочники для перехода на Supabase
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Все изменения данных идут через именованные команды (`run("payOrder", id)`), поэтому переход на Supabase — это новая реализация `DataSource`, которая вызывает одноимённые RPC. План — в [`docs/SUPABASE.md`](docs/SUPABASE.md).

@@ -52,7 +52,7 @@ export default function DistOrder() {
         }
       />
 
-      <div className="grid" style={{ gridTemplateColumns: "minmax(0, 1.6fr) minmax(260px, 1fr)", gap: 20, alignItems: "start" }}>
+      <div className="split">
         <section className="stack">
           <div className="table-wrap">
             <table className="table">

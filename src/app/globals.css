@@ -904,3 +904,21 @@ button.card:hover {
     background: #fff;
   }
 }
+
+/* две колонки: основное + боковая, на узком экране — одна */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+svg {
+  flex-shrink: 0;
+}

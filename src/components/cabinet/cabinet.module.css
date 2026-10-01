@@ -188,6 +188,11 @@
   .link {
     white-space: nowrap;
     padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .link :global(.grow) {
+    flex: none;
   }
 
   .top {

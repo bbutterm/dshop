@@ -33,7 +33,7 @@ export default function AdminHome() {
         <Kpi label="дешевле полки" value={percent(m.shelfGap)} hint="главное обещание" tone="mustard" />
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: "minmax(0, 1.5fr) minmax(0, 1fr)", gap: 20 }}>
+      <div className="split">
         <section className="card stack">
           <div className="spread">
             <b>Заказы по неделям</b>

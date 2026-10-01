@@ -38,7 +38,7 @@ export default function DistributorHome() {
         <Kpi label="невыкуп" value={percent(unclaimedRate, 1)} hint={`из ${finished.length} завершённых`} />
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)", gap: 20 }}>
+      <div className="split">
         <section className="stack">
           <h2 className="h2">Ближайшие привозы</h2>
           {upcoming.length === 0 && <div className="empty">Новых заказов пока нет.</div>}

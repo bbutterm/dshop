@@ -317,9 +317,15 @@ export function openDispute(db: DB, orderId: string, text: string) {
 export function confirmOrder(db: DB, orderId: string, qty: Record<string, number>) {
   const o = getOrder(db, orderId);
   expect(o, "placed");
+  const pick = (it: OrderItem) => Math.max(0, Math.min(it.qty, qty[it.productId] ?? it.qty));
+  if (o.items.every((it) => pick(it) === 0)) {
+    // отказ целиком: склад и деньги возвращает отмена
+    cancelOrder(db, orderId, "distributor", "Ни одной позиции нет в наличии");
+    return;
+  }
   const missing: string[] = [];
   for (const it of o.items) {
-    const q = Math.max(0, Math.min(it.qty, qty[it.productId] ?? it.qty));
+    const q = pick(it);
     it.confirmedQty = q;
     if (q < it.qty) {
       missing.push(`${it.name} — ${q} из ${it.qty}`);
@@ -328,10 +334,6 @@ export function confirmOrder(db: DB, orderId: string, qty: Record<string, number
     }
   }
   const confirmedTotal = orderSum(o.items, "confirmed");
-  if (confirmedTotal === 0) {
-    cancelOrder(db, orderId, "distributor", "Ни одной позиции нет в наличии");
-    return;
-  }
   o.refund = o.total - confirmedTotal;
   log(
     o,
@@ -393,12 +395,15 @@ export function dispatchTrip(
   }
   for (const sid of storeIds) {
     const n = orders.filter((o) => o.storeId === sid).length;
-    const back = db.orders.filter(
+    // водитель забирает невыкуп из магазинов рейса
+    const backOrders = db.orders.filter(
       (o) => o.storeId === sid && o.distributorId === distributorId && o.status === "unclaimed",
-    ).length;
+    );
+    for (const o of backOrders) returnUnclaimed(db, o.id);
+    const back = backOrders.length;
     notify(db, staffOf(db, sid).map((u) => u.id), {
       title: `${dist.name}: едет ${pn(n, ["заказ", "заказа", "заказов"])}`,
-      body: `Поставка ${fmtRelDay(date)}, ${vehicle}.${back ? ` Водитель заберёт невыкуп: ${back}.` : ""}`,
+      body: `Поставка ${fmtRelDay(date)}, ${vehicle}.${back ? ` Отдайте водителю невыкуп: ${back}.` : ""}`,
       href: `/store/incoming`,
       tone: "info",
     });

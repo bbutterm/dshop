@@ -23,7 +23,7 @@ create or replace function public._fail(msg text) returns void
 language plpgsql as $$ begin raise exception '%', msg using errcode = 'P0001'; end $$;
 
 -- delivery.ts nextDeliveryDates: ближайшие даты привоза; на завтра — только до cutoff_hour сегодня
-create or replace function public.next_delivery_dates(p_weekdays smallint[], p_cutoff smallint, p_count int default 3)
+create or replace function public.next_delivery_dates(p_weekdays smallint[], p_cutoff int, p_count int default 3)
 returns date[]
 language plpgsql stable as $$
 declare
@@ -332,15 +332,19 @@ begin
     update public.order_items set confirmed_qty = q where order_id = o.id and product_id = it.product_id;
     if q < it.qty then
       v_missing := v_missing || format('%s — %s из %s', it.name, q, it.qty);
-      update public.products set stock = stock + (it.qty - q) where id = it.product_id;
     end if;
   end loop;
 
   select coalesce(sum(confirmed_qty * price), 0) into v_confirmed from public.order_items where order_id = o.id;
   if v_confirmed = 0 then
+    -- отмена сама вернёт весь остаток на склад (в engine.ts здесь остаток возвращается дважды)
     perform public._cancel(o, v_by, 'Ни одной позиции нет в наличии');
     return;
   end if;
+  -- недовезённое возвращаем на склад
+  update public.products p set stock = p.stock + (i.qty - i.confirmed_qty)
+    from public.order_items i
+   where i.order_id = o.id and p.id = i.product_id and i.confirmed_qty < i.qty;
 
   v_refund := o.total - v_confirmed;
   update public.orders set refund = v_refund where id = o.id;
@@ -373,7 +377,7 @@ begin
   end loop;
 end $$;
 
--- dispatchTrip: собранные заказы на дату уезжают в магазины
+-- dispatchTrip: собранные заказы на дату уезжают в магазины, невыкуп из этих магазинов забирается обратно
 create or replace function public.dispatch_trip(p_distributor_id text, p_date date, p_driver text, p_vehicle text)
 returns jsonb
 language plpgsql security definer set search_path = public as $$
@@ -419,16 +423,35 @@ begin
 
   foreach v_store in array t.store_ids loop
     select count(*) into n from public.orders where trip_id = t.id and store_id = v_store;
-    select count(*) into v_back from public.orders
-     where store_id = v_store and distributor_id = p_distributor_id and status = 'unclaimed';
+    -- водитель забирает невыкуп из магазинов рейса (engine: returnUnclaimed для каждого)
+    v_back := 0;
+    for o in
+      select * from public.orders
+       where store_id = v_store and distributor_id = p_distributor_id and status = 'unclaimed'
+       for update
+    loop
+      perform public._return_unclaimed(o, v_by);
+      v_back := v_back + 1;
+    end loop;
     perform public._notify(public._staff_of(v_store), format('%s: едет заказов — %s', d.name, n),
       format('Поставка %s, %s.%s', public._day(p_date), coalesce(p_vehicle, ''),
-             case when v_back > 0 then format(' Водитель заберёт невыкуп: %s.', v_back) else '' end),
+             case when v_back > 0 then format(' Отдайте водителю невыкуп: %s.', v_back) else '' end),
       '/store/incoming', 'info');
   end loop;
 
   return jsonb_build_object('id', t.id, 'distributorId', t.distributor_id, 'date', t.date, 'storeIds', to_jsonb(t.store_ids),
                             'driver', t.driver, 'vehicle', t.vehicle, 'status', t.status);
+end $$;
+
+-- Общая часть returnUnclaimed (вызывается и из dispatch_trip), без проверки прав
+create or replace function public._return_unclaimed(o public.orders, p_by text)
+returns void
+language plpgsql as $$
+begin
+  perform public._expect(o, 'unclaimed');
+  perform public._log(o.id, 'returned', 'Невыкуп забран поставщиком', p_by);
+  update public.products p set stock = p.stock + coalesce(i.received_qty, i.confirmed_qty, i.qty)
+    from public.order_items i where i.order_id = o.id and p.id = i.product_id;
 end $$;
 
 create or replace function public.return_unclaimed(p_order_id text)
@@ -438,10 +461,7 @@ declare
   o public.orders := public._get_order(p_order_id);
   v_by text := public._require(o, 'distributor');
 begin
-  perform public._expect(o, 'unclaimed');
-  perform public._log(o.id, 'returned', 'Невыкуп забран поставщиком', v_by);
-  update public.products p set stock = p.stock + coalesce(i.received_qty, i.confirmed_qty, i.qty)
-    from public.order_items i where i.order_id = o.id and p.id = i.product_id;
+  perform public._return_unclaimed(o, v_by);
 end $$;
 
 -- importPrice(distributorId, rows): rows = [{sku, name, price, unit?, stock?, category?, brand?, weight?, shelfPrice?}]
@@ -717,14 +737,14 @@ revoke execute on function
   public._managers_of(text), public._staff_of(text), public._admins(),
   public._notify(uuid[], text, text, text, text), public._log(text, text, text, text),
   public._get_order(text), public._expect(public.orders, public.order_status[]),
-  public._require(public.orders, text[]), public._order_json(text), public._cancel(public.orders, text, text),
+  public._require(public.orders, text[]), public._order_json(text), public._cancel(public.orders, text, text), public._return_unclaimed(public.orders, text),
   public._free_slot(text), public.handle_new_user(), public.cart_lines_before(), public.cart_lines_sync_store(),
   public.set_updated_at(), public.profiles_guard()
 from authenticated;
 
 grant execute on function
   public.auth_role(), public.auth_store_id(), public.auth_distributor_id(), public.is_admin(),
-  public.next_delivery_dates(smallint[], smallint, int), public.order_json(public.orders), public.get_snapshot(),
+  public.next_delivery_dates(smallint[], int, int), public.order_json(public.orders), public.get_snapshot(),
   public.place_order(text, date, uuid), public.pay_order(text), public.cancel_order(text, text, text),
   public.open_dispute(text, text), public.confirm_order(text, jsonb), public.assemble_orders(text[]),
   public.dispatch_trip(text, date, text, text), public.return_unclaimed(text), public.import_price(text, jsonb),
