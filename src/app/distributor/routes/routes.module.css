@@ -1,0 +1,49 @@
+.route {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.3fr) auto 110px 130px auto;
+  gap: 16px;
+  align-items: end;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.storeCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-self: center;
+}
+
+.days {
+  display: flex;
+  gap: 4px;
+}
+
+.days button {
+  width: 40px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line-2);
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.days button[aria-pressed="true"] {
+  background: var(--green);
+  border-color: var(--green-ink);
+  color: #fff;
+}
+
+@media (max-width: 1100px) {
+  .route {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .storeCol,
+  .days {
+    grid-column: 1 / -1;
+  }
+}
