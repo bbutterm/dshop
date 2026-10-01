@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { InstallBanner } from "@/components/InstallPrompt";
 import { RoleEntry } from "@/components/RoleEntry";
 import styles from "./landing.module.css";
 
@@ -12,6 +13,9 @@ export default function Home() {
         <nav className="row" style={{ ["--gap" as string]: "6px" }}>
           <Link href="/pitch" className="btn btn--ghost btn--sm">
             Презентация <ArrowUpRight size={14} />
+          </Link>
+          <Link href="/demo" className="btn btn--ghost btn--sm hide-sm">
+            Сценарий показа
           </Link>
           <Link href="/login" className="btn btn--sm">
             Войти
@@ -73,9 +77,11 @@ export default function Home() {
         </div>
         <RoleEntry />
         <p className={styles.tip}>
-          <b>Как показать вживую:</b> откройте покупателя, дистрибьютора и магазин в трёх соседних вкладках (иконка
-          ↗ на карточке). Оформите заказ — уведомления побегут между вкладками в реальном времени.
+          <b>Как показать вживую:</b> откройте <Link href="/demo" className="link">сценарий показа</Link> — семь шагов с
+          кнопками «открыть под нужной ролью» в соседних вкладках. Уведомления бегут между вкладками в реальном времени,
+          оплата и чек открываются по ссылкам-заглушкам.
         </p>
+        <InstallBanner />
       </section>
 
       <footer className={styles.foot}>

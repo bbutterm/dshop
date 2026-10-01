@@ -1,0 +1,39 @@
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 36px 12px 12px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1.5px dashed var(--line-2);
+}
+
+.icon img {
+  display: block;
+  border-radius: 11px;
+}
+
+.close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.steps {
+  display: grid;
+  gap: 12px;
+  padding-left: 22px;
+  font-size: 15px;
+}
+
+.inline {
+  display: inline;
+  vertical-align: -3px;
+}

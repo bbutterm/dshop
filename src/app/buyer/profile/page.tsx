@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronRight, LogOut, MapPin, Pencil } from "lucide-react";
+import { InstallBanner } from "@/components/InstallPrompt";
 import { shelfSum } from "@/lib/engine";
 import { useAction, useApp } from "@/lib/data/provider";
 import { phoneFmt, pn, rub } from "@/lib/format";
@@ -86,6 +87,8 @@ export default function ProfilePage() {
           <input type="checkbox" /> Акции поставщиков моего магазина
         </label>
       </section>
+
+      <InstallBanner variant="row" />
 
       <button
         className="btn btn--ghost"

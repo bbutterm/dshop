@@ -1,28 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Lock } from "lucide-react";
-import { byId } from "@/lib/engine";
-import { useAction, useApp } from "@/lib/data/provider";
-import { rub } from "@/lib/format";
+import { useParams } from "next/navigation";
+import { useState, useSyncExternalStore } from "react";
+import { Check, Copy, ExternalLink, MessageSquareText, Share2 } from "lucide-react";
+import { byId, payLink } from "@/lib/engine";
+import { useApp } from "@/lib/data/provider";
+import { phoneFmt, rub } from "@/lib/format";
 import styles from "./pay.module.css";
 
-export default function PayPage() {
-  const { id } = useParams<{ id: string }>();
-  const { db } = useApp();
-  const { run } = useAction();
-  const router = useRouter();
-  const [stage, setStage] = useState<"form" | "processing">("form");
-  const o = byId(db.orders, id);
-  if (!o) return <div className="empty">Заказ не найден</div>;
-  const d = byId(db.distributors, o.distributorId)!;
+const noop = () => () => {};
 
-  if (o.status !== "awaiting_payment" && stage === "form") {
+/** После оформления: ссылка на оплату «пришла в СМС» — её можно открыть, скопировать или переслать */
+export default function PayLinkSent() {
+  const { id } = useParams<{ id: string }>();
+  const { db, user, toast } = useApp();
+  const [copied, setCopied] = useState(false);
+  const origin = useSyncExternalStore(noop, () => window.location.origin, () => "");
+  const canShare = useSyncExternalStore(noop, () => typeof navigator.share === "function", () => false);
+  const o = byId(db.orders, id);
+  if (!o || o.buyerId !== user.id) return <div className="empty">Заказ не найден</div>;
+  const d = byId(db.distributors, o.distributorId)!;
+  const url = `${origin}${payLink(o.id)}`;
+
+  if (o.status !== "awaiting_payment") {
     return (
       <div className="empty">
-        Заказ уже оплачен.
+        {o.status === "cancelled" ? "Заказ отменён." : "Заказ уже оплачен."}
         <Link href={`/buyer/orders/${o.id}`} className="btn btn--sm">
           К заказу
         </Link>
@@ -31,64 +35,57 @@ export default function PayPage() {
   }
 
   return (
-    <div className="fade-in" style={{ paddingTop: 8 }}>
-      <div className={styles.gate}>
-        <div className={styles.gateHead}>
-          <span className="kicker" style={{ color: "inherit" }}>
-            <Lock size={11} style={{ display: "inline", verticalAlign: -1 }} /> Тестовая платёжная страница
-          </span>
-          <span className="tiny" style={{ opacity: 0.7 }}>заглушка эквайринга</span>
-        </div>
-        <div className={styles.merchant}>
-          <span className="small muted">Получатель</span>
-          <b>{d.name}</b>
-          <span className="tiny muted">ИНН {d.inn} · заказ №{o.number}</span>
-        </div>
-        <div className={styles.amount}>{rub(o.total)}</div>
-
-        <div className="stack" style={{ ["--gap" as string]: "10px" }}>
-          <label className="field">
-            <span>Номер карты</span>
-            <input className="input mono" defaultValue="2200 0000 0000 0004" inputMode="numeric" />
-          </label>
-          <div className="grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
-            <label className="field">
-              <span>Срок</span>
-              <input className="input mono" defaultValue="12/28" />
-            </label>
-            <label className="field">
-              <span>CVC</span>
-              <input className="input mono" defaultValue="•••" />
-            </label>
-          </div>
-        </div>
-
-        <button
-          className="btn btn--accent btn--lg btn--block"
-          disabled={stage === "processing"}
-          onClick={async () => {
-            setStage("processing");
-            await new Promise((r) => setTimeout(r, 900));
-            const res = await run("payOrder", o.id);
-            if (res) router.replace(`/buyer/orders/${o.id}?paid=1`);
-            else setStage("form");
-          }}
-        >
-          {stage === "processing" ? "Проводим платёж…" : `Оплатить ${rub(o.total)}`}
-        </button>
-        <button
-          className="btn btn--ghost btn--block"
-          disabled={stage === "processing"}
-          onClick={async () => {
-            await run("cancelOrder", o.id, "buyer");
-            router.replace("/buyer/cart");
-          }}
-        >
-          Отказаться от оплаты
-        </button>
+    <div className="stack fade-in" style={{ ["--gap" as string]: "18px" }}>
+      <div className="stack" style={{ ["--gap" as string]: "4px" }}>
+        <span className="kicker">Заказ №{o.number} создан</span>
+        <h1 className="h1">Осталось оплатить</h1>
+        <p className="small muted">
+          Платёж идёт напрямую {d.name}. Ссылку на оплату отправили в СМС на {phoneFmt(user.phone)}.
+        </p>
       </div>
-      <p className="tiny muted" style={{ textAlign: "center", marginTop: 14 }}>
-        В рабочей версии здесь будет страница банка-эквайера поставщика, а чек — от его облачной кассы.
+
+      <div className={styles.phone}>
+        <div className={styles.from}>
+          <MessageSquareText size={14} /> СМС · {d.short === "DP" ? "DESNA-OPT" : "BAKALEYA32"}
+        </div>
+        <div className={styles.bubble}>
+          {d.name}: заказ №{o.number} на {rub(o.total)}. Оплатите по ссылке:{" "}
+          <Link href={payLink(o.id)} className={styles.url}>
+            {url.replace(/^https?:\/\//, "")}
+          </Link>
+          <span className={styles.time}>сейчас</span>
+        </div>
+      </div>
+
+      <Link href={payLink(o.id)} className="btn btn--accent btn--lg btn--block">
+        <ExternalLink size={18} /> Открыть ссылку и оплатить {rub(o.total)}
+      </Link>
+      <div className="row">
+        <button
+          className="btn grow"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(url);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 1800);
+            } catch {
+              toast({ title: "Не удалось скопировать", body: url, tone: "warn" });
+            }
+          }}
+        >
+          {copied ? <Check size={16} /> : <Copy size={16} />} {copied ? "Скопировано" : "Скопировать"}
+        </button>
+        {canShare && (
+          <button
+            className="btn grow"
+            onClick={() => navigator.share({ title: `Оплата заказа №${o.number}`, text: `Оплатите ${rub(o.total)}`, url }).catch(() => {})}
+          >
+            <Share2 size={16} /> Переслать
+          </button>
+        )}
+      </div>
+      <p className="tiny muted" style={{ textAlign: "center" }}>
+        Ссылку можно отправить тому, кто платит в семье. В демо она работает в этом браузере; с базой данных — на любом устройстве.
       </p>
     </div>
   );

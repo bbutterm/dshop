@@ -30,6 +30,13 @@ function rand6(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
+// ---------- ссылки ----------
+
+/** Ссылка на оплату — в рабочей версии её выдаёт эквайринг дистрибьютора */
+export const payLink = (orderId: string) => `/pay/${orderId}`;
+/** Ссылка на электронный чек — в рабочей версии ведёт в ОФД */
+export const receiptLink = (orderId: string) => `/r/${orderId}`;
+
 // ---------- выборки ----------
 
 export const byId = <T extends { id: string }>(list: T[], id: string | undefined) =>
@@ -235,8 +242,14 @@ export function placeOrder(
     updatedAt: now(),
     history: [],
   };
-  log(order, "awaiting_payment", "Заказ создан, ожидает оплаты", "buyer");
+  log(order, "awaiting_payment", "Заказ создан, ссылка на оплату отправлена в СМС", "buyer");
   db.orders.unshift(order);
+  notify(db, [buyerId], {
+    title: `СМС: ссылка на оплату заказа №${order.number}`,
+    body: `${dist.name}: оплатите ${rub(total)} по ссылке ${payLink(order.id)}`,
+    href: `/pay/${order.id}`,
+    tone: "info",
+  });
   return order;
 }
 
@@ -252,12 +265,12 @@ export function payOrder(db: DB, orderId: string): Order {
   }
   const cart = db.carts.find((c) => c.buyerId === o.buyerId);
   if (cart) delete cart.lines[o.distributorId];
-  log(o, "placed", `Оплачено ${rub(o.total)}, чек ${o.payment.receiptNo} отправлен в СМС`, "buyer");
+  log(o, "placed", `Оплачено ${rub(o.total)} по ссылке, чек ${o.payment.receiptNo} отправлен в СМС`, "buyer");
 
   const store = byId(db.stores, o.storeId)!;
   notify(db, [o.buyerId], {
     title: `Заказ №${o.number} оплачен`,
-    body: `Чек от дистрибьютора пришёл в СМС. Привоз — ${fmtRelDay(o.deliveryDate)}, ${store.name}.`,
+    body: `Чек ${o.payment.receiptNo} от дистрибьютора: ${receiptLink(o.id)}. Привоз — ${fmtRelDay(o.deliveryDate)}, ${store.name}.`,
     href: `/buyer/orders/${o.id}`,
     tone: "good",
   });

@@ -922,3 +922,9 @@ button.card:hover {
 svg {
   flex-shrink: 0;
 }
+
+@media (max-width: 520px) {
+  .hide-sm {
+    display: none !important;
+  }
+}

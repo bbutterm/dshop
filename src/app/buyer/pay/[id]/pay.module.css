@@ -1,35 +1,41 @@
-.gate {
-  max-width: 420px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 0 20px 20px;
+.phone {
+  padding: 16px;
   border-radius: 22px;
-  background: var(--card);
-  border: 1.5px solid var(--ink);
-  overflow: hidden;
-}
-
-.gateHead {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 -20px;
-  padding: 12px 20px;
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.merchant {
+  background: #e7e3d8;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 
-.amount {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 40px;
-  letter-spacing: -0.03em;
+.from {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.bubble {
+  position: relative;
+  max-width: 92%;
+  padding: 12px 14px 22px;
+  border-radius: 18px 18px 18px 6px;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.url {
+  color: #1a62c9;
+  text-decoration: underline;
+}
+
+.time {
+  position: absolute;
+  right: 12px;
+  bottom: 6px;
+  font-size: 11px;
+  color: var(--faint);
 }

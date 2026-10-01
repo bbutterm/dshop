@@ -59,6 +59,9 @@ export function DemoSwitch({ tone = "light" }: { tone?: "light" | "dark" }) {
               </a>
             </div>
           ))}
+          <a className={styles.script} href="/demo" target="_blank" rel="noreferrer">
+            Сценарий показа по шагам <ExternalLink size={13} />
+          </a>
           <div className={styles.foot}>
             <button
               className="btn btn--ghost btn--sm"

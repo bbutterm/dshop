@@ -27,9 +27,10 @@ export function LoginForm() {
     const u = ctx.db.users.find((x) => x.id === as);
     if (u) {
       ctx.login(u.id);
-      router.replace(roleMeta(u.role).home);
+      const home = roleMeta(u.role).home;
+      router.replace(next && next.startsWith(home) ? next : home);
     }
-  }, [ctx, as, router]);
+  }, [ctx, as, next, router]);
 
   const digits = phone.replace(/\D/g, "");
   const go = (userId: string, role: Parameters<typeof roleMeta>[0]) => {

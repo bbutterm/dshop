@@ -7,7 +7,7 @@ import { ArrowLeft, CheckCircle2, Clock, MapPin, MessageSquareWarning, RotateCcw
 import { CodeDigits, QR } from "@/components/Codes";
 import { Sheet } from "@/components/Sheet";
 import { StatusChip } from "@/components/StatusChip";
-import { BUYER_STEPS, byId, shelfSum, stepIndex } from "@/lib/engine";
+import { BUYER_STEPS, byId, receiptLink, shelfSum, stepIndex } from "@/lib/engine";
 import { fmtDateTime, fmtRelDay } from "@/lib/dates";
 import { useAction, useApp } from "@/lib/data/provider";
 import { rub } from "@/lib/format";
@@ -97,6 +97,13 @@ function OrderView() {
         </div>
       )}
 
+      {o.status === "awaiting_payment" && (
+        <Link href={`/buyer/pay/${o.id}`} className="notice" style={{ alignItems: "center" }}>
+          <span className="grow">Заказ ждёт оплаты по ссылке из СМС.</span>
+          <span className="btn btn--sm btn--accent">Оплатить</span>
+        </Link>
+      )}
+
       {off && (
         <div className="notice notice--tomato">
           <span>
@@ -175,7 +182,11 @@ function OrderView() {
             {rub(finalTotal)}
           </b>
         </div>
-        {o.payment.receiptNo && <span className="tiny faint mono">чек {o.payment.receiptNo} · продавец {d.name}</span>}
+        {o.payment.paidAt && (
+          <Link href={receiptLink(o.id)} className="tiny mono link" style={{ alignSelf: "flex-start" }}>
+            электронный чек {o.payment.receiptNo} · продавец {d.name}
+          </Link>
+        )}
       </section>
 
       <div className="stack" style={{ ["--gap" as string]: "8px" }}>

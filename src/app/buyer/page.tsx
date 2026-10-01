@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, MapPin, Search } from "lucide-react";
 import { CodeDigits } from "@/components/Codes";
+import { InstallBanner } from "@/components/InstallPrompt";
 import { StatusChip } from "@/components/StatusChip";
 import { byId, shelfSum } from "@/lib/engine";
 import { fmtRelDay } from "@/lib/dates";
@@ -155,6 +156,8 @@ export default function BuyerHome() {
         </div>
         <ProductGrid products={deals} />
       </section>
+
+      <InstallBanner />
 
       {done.length === 0 && (
         <section className={styles.how}>

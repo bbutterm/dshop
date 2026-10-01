@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Onest, Unbounded } from "next/font/google";
 import { DataProvider } from "@/lib/data/provider";
+import { PwaRegister } from "@/components/InstallPrompt";
 import { Toaster } from "@/components/Toaster";
 import "./globals.css";
 
@@ -11,12 +12,20 @@ const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin", "cyril
 export const metadata: Metadata = {
   title: { default: "Закупка — опт у дома", template: "%s · Закупка" },
   description: "Продукты по цене дистрибьютора с выдачей в магазине у дома.",
+  applicationName: "Закупка",
+  appleWebApp: { capable: true, title: "Закупка", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
+  icons: {
+    icon: [{ url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" }, { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: "#1F5A41",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -26,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <DataProvider>
           {children}
           <Toaster />
+          <PwaRegister />
         </DataProvider>
       </body>
     </html>
