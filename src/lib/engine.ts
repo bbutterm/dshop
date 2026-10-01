@@ -530,7 +530,8 @@ export function findByLabel(db: DB, storeId: string, label: string): Order | und
 
 export function findByCode(db: DB, storeId: string, code: string): Order | undefined {
   const c = code.replace(/\D/g, "");
-  return db.orders.find((o) => o.storeId === storeId && o.pickupCode === c);
+  const all = db.orders.filter((o) => o.storeId === storeId && o.pickupCode === c);
+  return all.find((o) => o.status === "at_store") ?? all[0];
 }
 
 export function issueOrder(db: DB, orderId: string) {

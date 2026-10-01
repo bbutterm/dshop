@@ -57,7 +57,9 @@ function readSession(): string | null {
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [source] = useState<DataSource | null>(() => (typeof window === "undefined" ? null : getSource()));
+  // На сервере и во время гидрации источника нет — так разметка совпадает, данные подтягиваются сразу после
+  const hydrated = useSyncExternalStore(noop, () => true, () => false);
+  const source = hydrated ? getSource() : null;
   const db = useSyncExternalStore(
     source?.subscribe ?? noop,
     () => source?.getSnapshot() ?? null,

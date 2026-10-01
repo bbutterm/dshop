@@ -1,0 +1,67 @@
+.scan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 18px;
+  border-radius: 18px;
+  background: var(--ink);
+  color: var(--mustard-2);
+}
+
+.scanInput {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+.scanInput::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.truck {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.parcel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 8px 3px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 520px) {
+  .label {
+    display: none;
+  }
+}

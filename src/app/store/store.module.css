@@ -1,0 +1,84 @@
+.app {
+  min-height: 100dvh;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--green-ink);
+  color: #fff;
+}
+
+.topInner {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+}
+
+.tabs {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 0 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  font-weight: 600;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.65);
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #fff;
+}
+
+.tab[aria-current="page"] {
+  color: var(--ink);
+  background: var(--paper);
+  border-radius: 12px 12px 0 0;
+}
+
+.badge,
+.warnBadge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--mustard);
+  color: var(--ink);
+}
+
+.warnBadge {
+  background: var(--tomato);
+  color: #fff;
+}
+
+.main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+@media (max-width: 520px) {
+  .tab {
+    padding: 10px 11px 12px;
+    font-size: 14px;
+  }
+}
