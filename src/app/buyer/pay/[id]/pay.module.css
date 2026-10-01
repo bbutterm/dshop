@@ -1,0 +1,35 @@
+.gate {
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 20px 20px;
+  border-radius: 22px;
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  overflow: hidden;
+}
+
+.gateHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 -20px;
+  padding: 12px 20px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.merchant {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.amount {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 40px;
+  letter-spacing: -0.03em;
+}

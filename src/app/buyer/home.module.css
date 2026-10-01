@@ -1,0 +1,144 @@
+.hello {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.saved {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  line-height: 1.15;
+}
+
+.saved b {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--green);
+}
+
+.pickup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 18px 14px;
+  border-radius: 22px;
+  background: var(--green);
+  color: #fff;
+  border: 1.5px solid var(--green-ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+.pickup::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 18px solid rgba(255, 255, 255, 0.07);
+}
+
+.pickupTop,
+.pickupFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pickupFoot {
+  font-size: 13px;
+  padding-top: 10px;
+  border-top: 1.5px dashed rgba(255, 255, 255, 0.3);
+}
+
+.slot {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--mustard);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.supplier {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px 14px 20px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.supplier::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--c);
+}
+
+.supplier:hover {
+  border-color: var(--ink);
+}
+
+.supTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.supName {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.supDates {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.date,
+.dateFirst {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.dateFirst {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.how {
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1.5px dashed var(--line-2);
+}
+
+.how ol {
+  margin: 10px 0 0 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}

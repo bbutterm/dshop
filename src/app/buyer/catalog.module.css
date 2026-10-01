@@ -1,0 +1,46 @@
+.bar {
+  position: sticky;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 12px 10px;
+  border-radius: 16px;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.5);
+  margin-top: 4px;
+}
+
+.barIcon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--mustard);
+  color: var(--ink);
+}
+
+.bar b {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.barProgress {
+  height: 5px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.barProgress i {
+  display: block;
+  height: 100%;
+  background: var(--mustard);
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}

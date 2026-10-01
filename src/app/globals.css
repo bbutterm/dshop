@@ -1,0 +1,906 @@
+/* ============================================================
+   Закупка — визуальный язык
+   Крафтовая бумага, ценник, чек и печать магазина у дома.
+   ============================================================ */
+
+:root {
+  --paper: #f2eee3;
+  --paper-2: #e9e3d4;
+  --card: #fffdf8;
+  --ink: #17201b;
+  --ink-2: #2b3530;
+  --muted: #5d6862;
+  --faint: #8c958f;
+  --line: #ddd6c5;
+  --line-2: #cbc2ad;
+
+  --green: #1f5a41;
+  --green-2: #2c7653;
+  --green-ink: #123826;
+  --green-wash: #e2ece4;
+  --mustard: #e3a82b;
+  --mustard-2: #f0c35a;
+  --mustard-wash: #fbefd0;
+  --tomato: #c4452c;
+  --tomato-wash: #f7e0d8;
+  --blue: #2f5f8f;
+  --blue-wash: #e0e9f2;
+
+  --r-s: 8px;
+  --r: 12px;
+  --r-l: 18px;
+  --shadow: 0 1px 0 rgba(23, 32, 27, 0.06), 0 6px 20px -12px rgba(23, 32, 27, 0.25);
+  --shadow-hard: 3px 3px 0 var(--ink);
+
+  --font-text: "Onest", system-ui, sans-serif;
+  --font-display: "Unbounded", var(--font-text);
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "tnum" 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mustard);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--mustard-2);
+}
+
+/* ---------- типографика ---------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 4.2vw, 30px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.h3 {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "zero" 1;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.faint {
+  color: var(--faint);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.tiny {
+  font-size: 12px;
+}
+
+.strike {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* ---------- раскладка ---------- */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap, 12px);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap, 10px);
+}
+
+.row.wrap {
+  flex-wrap: wrap;
+}
+
+.spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap, 12px);
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  gap: var(--gap, 12px);
+}
+
+.hr {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+
+.hr-dash {
+  border: 0;
+  border-top: 1.5px dashed var(--line-2);
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- кнопки ---------- */
+
+.btn {
+  --bg: var(--card);
+  --fg: var(--ink);
+  --bd: var(--line-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--bd);
+  background: var(--bg);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  --bd: var(--ink);
+}
+
+.btn:active {
+  transform: translate(1px, 1px);
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.btn--primary {
+  --bg: var(--green);
+  --fg: #fff;
+  --bd: var(--green-ink);
+  box-shadow: var(--shadow-hard);
+}
+
+.btn--primary:hover {
+  --bg: var(--green-2);
+  --bd: var(--ink);
+}
+
+.btn--primary:active {
+  box-shadow: 1px 1px 0 var(--ink);
+  transform: translate(2px, 2px);
+}
+
+.btn--accent {
+  --bg: var(--mustard);
+  --fg: var(--ink);
+  --bd: var(--ink);
+  box-shadow: var(--shadow-hard);
+}
+
+.btn--accent:hover {
+  --bg: var(--mustard-2);
+}
+
+.btn--accent:active {
+  box-shadow: 1px 1px 0 var(--ink);
+  transform: translate(2px, 2px);
+}
+
+.btn--ghost {
+  --bg: transparent;
+  --bd: transparent;
+}
+
+.btn--ghost:hover {
+  --bg: rgba(23, 32, 27, 0.06);
+  --bd: transparent;
+}
+
+.btn--danger {
+  --fg: var(--tomato);
+  --bd: color-mix(in srgb, var(--tomato) 45%, transparent);
+}
+
+.btn--danger:hover {
+  --bg: var(--tomato-wash);
+  --bd: var(--tomato);
+}
+
+.btn--sm {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: var(--r-s);
+}
+
+.btn--lg {
+  min-height: 54px;
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--icon {
+  width: 44px;
+  padding: 0;
+}
+
+.btn--sm.btn--icon {
+  width: 34px;
+}
+
+.link {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--green) 35%, transparent);
+}
+
+.link:hover {
+  text-decoration-color: var(--green);
+}
+
+/* ---------- поверхности ---------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  padding: var(--pad, 16px);
+}
+
+.card--flat {
+  background: transparent;
+}
+
+.card--ink {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.card--green {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green-ink);
+}
+
+.card--mustard {
+  background: var(--mustard-wash);
+  border-color: color-mix(in srgb, var(--mustard) 50%, var(--line));
+}
+
+a.card,
+button.card {
+  display: block;
+  text-align: left;
+  width: 100%;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+a.card:hover,
+button.card:hover {
+  border-color: var(--line-2);
+}
+
+.section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 2px;
+}
+
+/* ---------- поля ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field > span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--line-2);
+  background: var(--card);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 18%, transparent);
+}
+
+.input--code {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  min-height: 64px;
+}
+
+.search {
+  position: relative;
+}
+
+.search svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+.search .input {
+  padding-left: 42px;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.check input {
+  accent-color: var(--green);
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- метки ---------- */
+
+.chip {
+  --c: var(--muted);
+  --b: rgba(23, 32, 27, 0.06);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--b);
+  color: var(--c);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chip::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.chip--plain::before {
+  display: none;
+}
+
+.chip--green {
+  --c: var(--green);
+  --b: var(--green-wash);
+}
+
+.chip--mustard {
+  --c: #8a5a00;
+  --b: var(--mustard-wash);
+}
+
+.chip--tomato {
+  --c: var(--tomato);
+  --b: var(--tomato-wash);
+}
+
+.chip--blue {
+  --c: var(--blue);
+  --b: var(--blue-wash);
+}
+
+.chip--ink {
+  --c: var(--paper);
+  --b: var(--ink);
+}
+
+.pill-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.pill-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.pill-tabs button,
+.pill-tabs a {
+  flex: none;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-2);
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-tabs [aria-pressed="true"],
+.pill-tabs [aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.pill-tabs .count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Ценник: жёлтая бирка с дыркой, как на полке */
+.pricetag {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 5px 10px 5px 18px;
+  background: var(--mustard);
+  color: var(--ink);
+  border-radius: 4px 8px 8px 4px;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+  line-height: 1;
+}
+
+.pricetag::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.pricetag b {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.pricetag s {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 3px;
+}
+
+.pricetag--lg {
+  padding: 8px 16px 8px 24px;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+}
+
+.pricetag--lg::before {
+  left: 9px;
+}
+
+.pricetag--lg b {
+  font-size: 26px;
+}
+
+.pricetag--lg s {
+  font-size: 13px;
+}
+
+/* Печать: статус, поставленный штампом */
+.stamp {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 2.5px solid currentColor;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  rotate: -6deg;
+  opacity: 0.85;
+  mask-image: radial-gradient(circle at 30% 40%, #000 60%, rgba(0, 0, 0, 0.75) 61%, #000 75%);
+}
+
+/* Чек: зубчатый низ */
+.receipt {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: var(--r-l) var(--r-l) 0 0;
+  padding: 18px 18px 22px;
+  margin-bottom: 10px;
+}
+
+.receipt::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: -10px;
+  height: 10px;
+  background:
+    linear-gradient(-45deg, transparent 6px, var(--card) 0) 0 0 / 14px 10px repeat-x,
+    linear-gradient(45deg, transparent 6px, var(--card) 0) 0 0 / 14px 10px repeat-x;
+  filter: drop-shadow(0 1px 0 var(--line));
+}
+
+.receipt-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.receipt-line .dots {
+  flex: 1;
+  border-bottom: 1.5px dotted var(--line-2);
+  translate: 0 -4px;
+  min-width: 12px;
+}
+
+/* ---------- таблицы ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  background: var(--card);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 60%, var(--card));
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: 0;
+}
+
+.table tbody tr.clickable {
+  cursor: pointer;
+}
+
+.table tbody tr.clickable:hover td {
+  background: color-mix(in srgb, var(--mustard-wash) 50%, transparent);
+}
+
+.table .r {
+  text-align: right;
+}
+
+/* ---------- степпер количества ---------- */
+
+.qty {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+}
+
+.qty button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: inherit;
+}
+
+.qty button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.qty span {
+  min-width: 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.qty--light {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+.qty--light button:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* ---------- прочее ---------- */
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--muted);
+  border: 1.5px dashed var(--line-2);
+  border-radius: var(--r-l);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--paper-2), var(--paper), var(--paper-2));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+  border-radius: var(--r);
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.badge-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--tomato);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--card);
+}
+
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--paper-2);
+  border: 1px solid var(--line-2);
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  background: var(--mustard-wash);
+  font-size: 14px;
+}
+
+.notice--green {
+  background: var(--green-wash);
+}
+
+.notice--tomato {
+  background: var(--tomato-wash);
+}
+
+.notice--blue {
+  background: var(--blue-wash);
+}
+
+.notice svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--paper-2);
+  overflow: hidden;
+}
+
+.progress > i {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+}

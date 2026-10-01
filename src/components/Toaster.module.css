@@ -1,0 +1,90 @@
+.wrap {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 50%;
+  translate: -50% 0;
+  width: min(420px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  position: relative;
+  pointer-events: auto;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.45);
+  animation: drop 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.inner {
+  display: flex;
+  gap: 12px;
+  padding: 12px 36px 12px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.inner b {
+  display: block;
+  font-weight: 600;
+}
+
+.body {
+  display: block;
+  margin-top: 2px;
+  opacity: 0.72;
+  font-size: 13px;
+}
+
+.icon {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon[data-tone="good"] {
+  background: var(--green-2);
+}
+
+.icon[data-tone="warn"] {
+  background: var(--mustard);
+  color: var(--ink);
+}
+
+.icon[data-tone="error"] {
+  background: var(--tomato);
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+  }
+}

@@ -1,0 +1,75 @@
+.map {
+  position: relative;
+  height: 230px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1.5px solid var(--ink);
+}
+
+.map svg {
+  width: 100%;
+  height: 100%;
+}
+
+.me {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.store {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  transition: border-color 0.15s ease;
+}
+
+.store[data-focus="true"] {
+  border-color: var(--ink);
+}
+
+.store[data-off="true"] {
+  background: transparent;
+  border-style: dashed;
+}
+
+.name {
+  font-size: 16px;
+}
+
+.sups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sup i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--c);
+}

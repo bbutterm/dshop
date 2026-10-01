@@ -1,0 +1,137 @@
+.code {
+  border-radius: 22px;
+  background: var(--green);
+  color: #fff;
+  border: 1.5px solid var(--green-ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  overflow: hidden;
+}
+
+.codeTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+}
+
+.qr {
+  flex: none;
+  padding: 6px;
+  border-radius: 12px;
+  background: #fffdf8;
+  color: var(--ink);
+}
+
+.codeFoot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 12px 18px;
+  font-size: 13px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.codeFoot span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.slot {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--mustard);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.issued {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--green-wash);
+}
+
+.steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.steps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  font-size: 14px;
+}
+
+.steps li + li::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: -9px;
+  height: 18px;
+  width: 2px;
+  background: var(--line-2);
+}
+
+.steps li[data-state="done"] + li::before,
+.steps li[data-state="done"] + li[data-state="now"]::before {
+  background: var(--green);
+}
+
+.dot {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--line-2);
+  background: var(--card);
+}
+
+.steps li[data-state="done"] .dot {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.steps li[data-state="now"] .dot {
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px var(--green-wash);
+  background: var(--mustard);
+}
+
+.steps li[data-state="next"] b {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.history {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.history summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.history ul {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.history li {
+  display: grid;
+  gap: 1px;
+}
