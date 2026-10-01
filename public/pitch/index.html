@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Закупка — опт у дома · презентация</title>
+<meta name="description" content="Продукты по цене дистрибьютора с выдачей в магазине у дома. Пилот в Брянске.">
+<!-- шрифты лежат рядом: презентация работает и без интернета -->
+<link href="/pitch/fonts/fonts.css" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f2eee3; --paper-2:#e9e3d4; --card:#fffdf8; --ink:#17201b; --ink-2:#2b3530; --muted:#5d6862;
+    --line:#ddd6c5; --line-2:#cbc2ad; --green:#1f5a41; --green-2:#2c7653; --green-ink:#123826; --green-wash:#e2ece4;
+    --mustard:#e3a82b; --mustard-2:#f0c35a; --mustard-wash:#fbefd0; --tomato:#c4452c; --tomato-wash:#f7e0d8; --blue:#2f5f8f;
+    --display:"Unbounded",system-ui,sans-serif; --text:"Onest",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:#0f1512;color:var(--ink);font-family:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden}
+  .deck{position:fixed;inset:0 0 62px;display:grid;place-items:center}
+  .stage{width:1280px;height:720px;position:relative;transform-origin:center center}
+  .slide{position:absolute;inset:0;background:var(--paper);border-radius:6px;overflow:hidden;padding:64px 72px;display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .35s ease,transform .35s ease;transform:translateX(24px)}
+  .slide.on{opacity:1;visibility:visible;transform:none}
+  .slide.prev{transform:translateX(-24px)}
+  .k{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  h1,h2{font-family:var(--display);letter-spacing:-.025em;line-height:1.02}
+  h2{font-size:52px;font-weight:600;margin:14px 0 0;max-width:1000px}
+  h2 em{font-style:normal;color:var(--green)}
+  .lead{font-size:22px;line-height:1.45;color:var(--ink-2);max-width:820px;margin-top:22px}
+  .foot{position:absolute;left:72px;right:72px;bottom:28px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .logo{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.03em}
+  .dark{background:var(--ink);color:var(--paper)}
+  .dark .k,.dark .foot{color:rgba(242,238,227,.55)}
+  .dark .lead{color:rgba(242,238,227,.82)}
+  .dark h2 em{color:var(--mustard-2)}
+  .greenbg{background:var(--green);color:#fff}
+  .greenbg .k,.greenbg .foot{color:rgba(255,255,255,.6)}
+  .greenbg h2 em{color:var(--mustard-2)}
+  .grow{flex:1}
+  .row{display:flex;gap:20px}
+  .cols{display:grid;gap:18px}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:24px}
+  .card.ink{border-color:var(--ink);box-shadow:5px 5px 0 var(--ink)}
+  .card h3{font-family:var(--display);font-weight:600;font-size:22px;letter-spacing:-.02em;margin-bottom:10px}
+  .card p,.card li{font-size:16px;line-height:1.45;color:var(--ink-2)}
+  .card ul{list-style:none;display:grid;gap:8px}
+  .card li{padding-left:18px;position:relative}
+  .card li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:2px;background:var(--mustard)}
+  .num{font-family:var(--display);font-weight:600;letter-spacing:-.03em}
+  /* ценник */
+  .tag{position:relative;display:inline-flex;flex-direction:column;padding:14px 26px 14px 38px;background:var(--mustard);color:var(--ink);clip-path:polygon(22px 0,100% 0,100% 100%,22px 100%,0 50%);border-radius:6px 14px 14px 6px}
+  .tag::before{content:"";position:absolute;left:14px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:var(--paper)}
+  .tag b{font-family:var(--display);font-weight:800;font-size:64px;letter-spacing:-.04em;line-height:1}
+  .tag span{font-size:15px;font-weight:600;margin-top:4px}
+  .stamp{display:inline-block;padding:6px 14px;border:3px solid currentColor;border-radius:8px;font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:.08em;text-transform:uppercase;rotate:-6deg}
+  .shot{border-radius:22px;border:1.5px solid var(--ink);box-shadow:6px 6px 0 var(--ink);display:block;background:#fff}
+  .phone{width:232px;height:430px;object-fit:cover;object-position:top;border-radius:30px;border:8px solid var(--ink);box-shadow:8px 8px 0 rgba(0,0,0,.25)}
+  table{border-collapse:collapse;width:100%;font-size:17px}
+  th{text-align:left;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 14px;border-bottom:2px solid var(--ink)}
+  td{padding:13px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  td:first-child{font-weight:600}
+  .pill{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--green-wash);color:var(--green);font-weight:600;font-size:14px}
+  /* навигация */
+  .nav{position:fixed;left:50%;bottom:18px;translate:-50% 0;display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:rgba(23,32,27,.82);backdrop-filter:blur(8px);color:#fff;z-index:10;font-family:var(--mono);font-size:13px}
+  .nav button{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:inherit;font-size:18px;cursor:pointer}
+  .nav button:hover{background:rgba(255,255,255,.12)}
+  .nav a{color:inherit;text-decoration:none;padding:0 12px;opacity:.75}
+  .nav a:hover{opacity:1}
+  .bar{position:fixed;left:0;top:0;height:3px;background:var(--mustard);z-index:10;transition:width .3s ease}
+  .counter{min-width:64px;text-align:center}
+  /* мобильный режим: слайды одной лентой */
+  @media (max-width:760px), (max-height:460px) and (orientation:portrait){
+    body{overflow:auto;background:var(--paper)}
+    .deck{position:static;display:block}
+    .stage{width:auto;height:auto;transform:none!important}
+    .slide{position:relative;opacity:1;visibility:visible;transform:none;border-radius:0;padding:40px 20px 56px;min-height:auto;border-bottom:1.5px solid var(--ink)}
+    .slide .foot{left:20px;right:20px;bottom:18px}
+    h2{font-size:32px}
+    .lead{font-size:17px}
+    .cols{grid-template-columns:1fr!important}
+    .row{flex-direction:column}
+    .hide-m{display:none!important}
+    .tag b{font-size:44px}
+    .nav,.bar{display:none}
+    .big{font-size:56px!important}
+    table{font-size:14px}
+    .phone{width:220px;height:auto}
+  }
+  @media print{
+    body{background:#fff;overflow:visible}
+    .deck{position:static;display:block}
+    .stage{transform:none!important}
+    .slide{position:relative;opacity:1;visibility:visible;transform:none;page-break-after:always;break-after:page;width:1280px;height:720px}
+    .nav,.bar{display:none}
+    @page{size:1280px 720px;margin:0}
+  }
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck"><div class="stage" id="stage">
+
+<!-- 1 -->
+<section class="slide">
+  <div class="logo"><svg width="34" height="34" viewBox="0 0 32 32"><path d="M9 4h17a3 3 0 0 1 3 3v18a3 3 0 0 1-3 3H9L3 16Z" fill="#E3A82B"/><circle cx="9.5" cy="16" r="2.2" fill="#F2EEE3"/><path d="M15 11.5h9M15 16h7M15 20.5h9" stroke="#17201B" stroke-width="2.4" stroke-linecap="round"/></svg>закупка</div>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="k">Пилот · Брянск · октябрь 2026</div>
+    <h1 class="big" style="font-size:112px;font-weight:800;margin-top:18px">Опт у&nbsp;дома.<br><span style="color:var(--green)">Дешевле полки.</span></h1>
+    <p class="lead">Семья заказывает продукты у дистрибьютора и забирает их в магазине у дома — по цене дистрибьютора, с обычной поставкой.</p>
+  </div>
+  <div class="foot"><span>Закупка · презентация для инвесторов</span><span>01</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide dark">
+  <div class="k">Проблема</div>
+  <h2>Семья закупается впрок раз в&nbsp;неделю — и&nbsp;<em>переплачивает</em> или тратит выходной</h2>
+  <div class="cols grow" style="grid-template-columns:1fr 1fr 1fr;margin-top:44px;align-items:start">
+    <div class="card" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)">
+      <h3 style="color:var(--paper)">Магазин у дома</h3>
+      <p style="color:rgba(242,238,227,.75)">Рядом и удобно, но наценка магазина: товар за 100&nbsp;₽ опта стоит на полке 130–150&nbsp;₽.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)">
+      <h3 style="color:var(--paper)">Гипермаркет и рынок</h3>
+      <p style="color:rgba(242,238,227,.75)">Дешевле, но это поездка через город, очередь и половина субботы.</p>
+    </div>
+    <div class="card" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)">
+      <h3 style="color:var(--paper)">Оптовка</h3>
+      <p style="color:rgba(242,238,227,.75)">Цена хорошая, но коробками, далеко и без гарантии, что нужное есть на складе.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>02</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="k">Решение</div>
+  <h2>Магазин у дома становится <em>пунктом выдачи</em> дистрибьютора</h2>
+  <div class="row grow" style="align-items:center;margin-top:20px;gap:56px">
+    <div style="flex:1.1">
+      <p class="lead" style="margin-top:0">Покупатель заказывает в приложении у дистрибьютора, который и так возит товар в этот магазин. Заказ едет с обычной поставкой, магазин хранит пакет и выдаёт по коду.</p>
+      <p class="lead">Товар не проходит через учёт магазина, наценки полки нет — покупатель платит цену канала.</p>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:22px;align-items:flex-start">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:16px">
+        <span style="padding:10px 16px;border:1.5px solid var(--line-2);border-radius:12px;background:var(--card)">Опт 100&nbsp;₽</span>
+        <span style="padding:10px 16px;border:1.5px solid var(--line-2);border-radius:12px;background:var(--card)">+&nbsp;6&nbsp;₽, из них плата магазину</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:26px">
+        <div class="tag" style="rotate:-4deg"><b>106&nbsp;₽</b><span>в «Закупке»</span></div>
+        <div style="font-family:var(--display);font-size:30px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--tomato);text-decoration-thickness:3px">130–150&nbsp;₽</div>
+      </div>
+      <span class="k">цены условные, уточняются на пилоте</span>
+    </div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>03</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="k">Как работает</div>
+  <h2>Один заказ — один дистрибьютор — одна дата привоза</h2>
+  <div class="cols grow" style="grid-template-columns:repeat(4,1fr);margin-top:40px;align-items:stretch">
+    <div class="card"><div class="k">01 · покупатель</div><h3 style="margin-top:12px">Собирает корзину</h3><p>Выбирает магазин у дома, видит поставщиков и ближайшие даты привоза. Платит онлайн, чек от кассы дистрибьютора.</p></div>
+    <div class="card"><div class="k">02 · дистрибьютор</div><h3 style="margin-top:12px">Подтверждает и собирает</h3><p>Подтверждает по позициям, собирает и маркирует пакет. Везёт со своим обычным рейсом.</p></div>
+    <div class="card"><div class="k">03 · магазин</div><h3 style="margin-top:12px">Принимает</h3><p>Сканирует маркировку без распаковки, кладёт на полку выдачи. Покупатель получает код.</p></div>
+    <div class="card ink" style="background:var(--green);color:#fff;border-color:var(--green-ink)"><div class="k" style="color:rgba(255,255,255,.65)">04 · выдача</div><h3 style="margin-top:12px;color:#fff">По коду</h3><p style="color:rgba(255,255,255,.85)">Продавец вводит код — видит ячейку и состав. Отдаёт пакет, денег не берёт: всё оплачено.</p></div>
+  </div>
+  <p style="margin-top:18px;font-size:15px;color:var(--muted)">Статусы: оформлен → подтверждён → в пути → в магазине → <b style="color:var(--ink)">выдан</b>. Не забрали за срок хранения — невыкуп уезжает обратно следующим рейсом.</p>
+  <div class="foot"><span>Закупка</span><span>04</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="k">Выгода каждой стороне</div>
+  <h2>Никто не делает лишней работы — каждый получает своё</h2>
+  <div class="cols grow" style="grid-template-columns:repeat(3,1fr);margin-top:40px;align-items:start">
+    <div class="card"><h3>Покупатель</h3><ul><li>Цена ниже полки на 20–30&nbsp;%</li><li>Без поездки на оптовку</li><li>Забирает по пути домой</li></ul></div>
+    <div class="card"><h3>Дистрибьютор</h3><ul><li>Новый объём через те же точки</li><li>Без торговых агентов и витрин</li><li>Предоплата, деньги напрямую ему</li></ul></div>
+    <div class="card"><h3>Магазин у дома</h3><ul><li>Плата за каждую выдачу</li><li>Новые люди заходят — и докупают хлеб, молоко</li><li>Товар не в его учёте и не в его кассе</li></ul></div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>05</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="k">Продукт · рабочий прототип</div>
+  <h2>Три интерфейса на&nbsp;одной базе — уже кликается</h2>
+  <div class="row grow" style="margin-top:30px;align-items:flex-start;gap:28px">
+    <img class="phone" src="/pitch/img/buyer-home.jpg" alt="Главная покупателя">
+    <img class="phone hide-m" src="/pitch/img/buyer-code.jpg" alt="Код выдачи">
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px;padding-top:8px">
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Покупатель · телефон</h3><p>Магазин у дома, корзина на каждого поставщика, минималка, оплата, код и QR выдачи, уведомления о статусе.</p></div>
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Магазин · смартфон продавца</h3><p>Приёмка по маркировке, полка с ячейками и сроками, выдача по коду за минуту, невыкуп.</p></div>
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Дистрибьютор · веб-кабинет</h3><p>Подтверждение по позициям, лист сборки на рейс, печать маркировки, прайс из Excel, график точек, отчёт.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>06</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide" style="padding-right:0">
+  <div class="k">Продукт · магазин и дистрибьютор</div>
+  <h2 style="max-width:520px;font-size:44px">Минута на&nbsp;выдачу. Обычный рейс.</h2>
+  <p class="lead" style="max-width:480px;font-size:18px">Продавец видит ячейку и состав по коду. Дистрибьютор собирает заказы по сводному листу и везёт с плановой поставкой.</p>
+  <img class="shot hide-m" src="/pitch/img/dist-assembly.jpg" alt="Сборка и рейсы" style="position:absolute;right:-80px;top:120px;width:720px">
+  <img class="shot" src="/pitch/img/store-shelf.jpg" alt="Полка выдачи" style="position:relative;margin-top:26px;width:500px;height:250px;object-fit:cover;object-position:top;z-index:2">
+  <div class="foot"><span>Закупка</span><span>07</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide greenbg">
+  <div class="k">Деньги</div>
+  <h2>Продавец — дистрибьютор. Мы <em>не&nbsp;проводим деньги</em> и&nbsp;не&nbsp;ведём кассу</h2>
+  <div class="cols grow" style="grid-template-columns:repeat(3,1fr);margin-top:44px;align-items:start">
+    <div><div class="num" style="font-size:22px">Покупатель → дистрибьютор</div><p style="margin-top:10px;font-size:16px;line-height:1.5;color:rgba(255,255,255,.85)">Предоплата по ссылке интернет-эквайринга дистрибьютора, чек от его облачной кассы приходит автоматически.</p></div>
+    <div><div class="num" style="font-size:22px">Дистрибьютор → магазин</div><p style="margin-top:10px;font-size:16px;line-height:1.5;color:rgba(255,255,255,.85)">Плата за выдачу — фикс за заказ, раз в неделю или месяц по отчёту из кабинета.</p></div>
+    <div><div class="num" style="font-size:22px">Платформа</div><p style="margin-top:10px;font-size:16px;line-height:1.5;color:rgba(255,255,255,.85)">На пилоте комиссия 0. После — процент с оборота канала у дистрибьютора.</p></div>
+  </div>
+  <p style="font-size:15px;color:rgba(255,255,255,.7);max-width:900px">Запасной вариант, если у дистрибьютора нет эквайринга: оплата на кассе магазина агентским чеком от имени дистрибьютора. Схема — на проверку бухгалтерам обеих сторон.</p>
+  <div class="foot"><span>Закупка</span><span>08</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="k">Почему это может сработать</div>
+  <h2>Мы не строим логистику — <em>она уже ездит</em></h2>
+  <div class="cols grow" style="grid-template-columns:1fr 1fr;margin-top:36px;align-items:start">
+    <div class="card"><h3>Нулевая стоимость доставки</h3><p>Заказ едет в той же машине, что и плановая поставка в магазин. Нет курьеров, нет новых складов, нет последней мили.</p></div>
+    <div class="card"><h3>Привычка уже есть</h3><p>Маркетплейсы приучили забирать заказы в пункте выдачи. Здесь пункт — магазин, куда и так заходят каждый день.</p></div>
+    <div class="card"><h3>Магазину нужен поток</h3><p>Магазины у дома теряют трафик сетям и доставкам. Каждая выдача — визит, плата и шанс продать своё.</p></div>
+    <div class="card"><h3>Дистрибьютору нужен канал</h3><p>Прямой спрос без агентов: предоплаченный объём через точки, куда он уже возит, по своей цене.</p></div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>09</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="k">Пилот · 6–8 недель</div>
+  <h2>Проверяем привычку, а&nbsp;не&nbsp;зарабатываем</h2>
+  <div class="row grow" style="margin-top:28px;gap:36px;align-items:flex-start">
+    <div style="flex:0 0 330px" class="card">
+      <h3>Рамки</h3>
+      <ul><li>Брянск или Орёл</li><li>1 дистрибьютор, 1 магазин</li><li>Кондитерка и бакалея, штучно</li><li>Только онлайн-предоплата</li><li>Охлаждёнка и вес — вторым шагом</li></ul>
+    </div>
+    <table style="flex:1">
+      <thead><tr><th>Что меряем</th><th>Зачем</th></tr></thead>
+      <tbody>
+        <tr><td>Заказов в неделю</td><td>Хватит ли спроса на одну точку</td></tr>
+        <tr><td>Средний чек</td><td>Какую минималку может ставить дистрибьютор</td></tr>
+        <tr><td>Повторные покупатели <span class="pill">главная</span></td><td>Становится ли это привычкой</td></tr>
+        <tr><td>Доля невыкупа</td><td>Хватает ли предоплаты</td></tr>
+        <tr><td>Время выдачи</td><td>Нагрузка на продавца</td></tr>
+        <tr><td>Разница с полкой</td><td>Работает ли главное обещание</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:14px;color:var(--muted)">Все метрики считаются в админке платформы автоматически — в прототипе уже на демо-данных.</p>
+  <div class="foot"><span>Закупка</span><span>10</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="k">Риски и что с ними делаем</div>
+  <h2>Где это может сломаться</h2>
+  <table style="margin-top:34px">
+    <thead><tr><th style="width:30%">Риск</th><th>Что делаем</th></tr></thead>
+    <tbody>
+      <tr><td>Невыкуп</td><td>Полная предоплата, срок хранения, напоминания; невыкуп уезжает обратно следующим рейсом</td></tr>
+      <tr><td>Лишняя работа для продавца</td><td>Приёмка сканом маркировки без распаковки, выдача по коду, ячейки и сроки видны на экране</td></tr>
+      <tr><td>Место в магазине</td><td>Лимит ячеек на полке выдачи, приложение не даст принять больше</td></tr>
+      <tr><td>Нет эквайринга у дистрибьютора</td><td>Агентская схема: оплата на кассе магазина от имени дистрибьютора</td></tr>
+      <tr><td>Недовоз позиции</td><td>Отметка при приёмке, автоматический возврат покупателю за непривезённое</td></tr>
+    </tbody>
+  </table>
+  <div class="foot"><span>Закупка</span><span>11</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="k">Дорожная карта</div>
+  <h2>От прототипа до решения о масштабе</h2>
+  <div class="cols grow" style="grid-template-columns:repeat(5,1fr);margin-top:44px;gap:12px;align-items:start">
+    <div class="card" style="background:var(--green-wash);border-color:var(--green)"><span class="stamp" style="color:var(--green);font-size:12px">готово</span><h3 style="margin-top:14px;font-size:18px">Схема процесса</h3><p>Роли, статусы, деньги</p></div>
+    <div class="card" style="background:var(--green-wash);border-color:var(--green)"><span class="stamp" style="color:var(--green);font-size:12px">готово</span><h3 style="margin-top:14px;font-size:18px">Прототип</h3><p>Все роли, сквозной флоу заказа</p></div>
+    <div class="card ink"><span class="k">сейчас</span><h3 style="margin-top:14px;font-size:18px">MVP</h3><p>База и вход по СМС, эквайринг, уведомления</p></div>
+    <div class="card"><span class="k">далее</span><h3 style="margin-top:14px;font-size:18px">Пилот</h3><p>6–8 недель, еженедельный разбор метрик</p></div>
+    <div class="card"><span class="k">далее</span><h3 style="margin-top:14px;font-size:18px">Масштаб</h3><p>Новые дистрибьюторы, охлаждёнка, второй город</p></div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>12</span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide dark">
+  <div class="k">Что нам нужно</div>
+  <h2>Запустить пилот и&nbsp;довести MVP <em>до&nbsp;первых повторных заказов</em></h2>
+  <div class="cols grow" style="grid-template-columns:repeat(3,1fr);margin-top:44px;align-items:start">
+    <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Деньги</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Бюджет на MVP и 8 недель пилота: разработка, листовки в районе, поддержка магазина.</p></div>
+    <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Связи</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Знакомство с дистрибьюторами кондитерки и бакалеи в Брянске и Орле.</p></div>
+    <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Экспертиза</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Юридическая проверка агентской схемы и онлайн-касс.</p></div>
+  </div>
+  <div class="foot"><span>Закупка</span><span>13</span></div>
+</section>
+
+<!-- 14 -->
+<section class="slide" style="justify-content:center">
+  <div class="logo" style="font-size:30px"><svg width="44" height="44" viewBox="0 0 32 32"><path d="M9 4h17a3 3 0 0 1 3 3v18a3 3 0 0 1-3 3H9L3 16Z" fill="#E3A82B"/><circle cx="9.5" cy="16" r="2.2" fill="#F2EEE3"/><path d="M15 11.5h9M15 16h7M15 20.5h9" stroke="#17201B" stroke-width="2.4" stroke-linecap="round"/></svg>закупка</div>
+  <h1 class="big" style="font-size:88px;font-weight:800;margin-top:28px">Попробуйте сами.</h1>
+  <p class="lead">Прототип открыт: войдите покупателем, дистрибьютором и магазином в соседних вкладках и проведите заказ от корзины до выдачи.</p>
+  <p style="margin-top:28px"><a href="/" style="display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:14px;background:var(--mustard);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);color:var(--ink);font-weight:700;font-size:18px;text-decoration:none">Открыть прототип →</a></p>
+  <div class="foot"><span>Закупка · рабочий документ, цифры условные</span><span>14</span></div>
+</section>
+
+</div></div>
+
+<nav class="nav" aria-label="Слайды">
+  <button id="prev" aria-label="Назад">←</button>
+  <span class="counter" id="counter">1 / 14</span>
+  <button id="next" aria-label="Вперёд">→</button>
+  <a href="/" title="Открыть прототип">демо ↗</a>
+</nav>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var stage=document.getElementById('stage');
+  var i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.slice(1),10)||1)-1));
+  function fit(){
+    var s=Math.min((window.innerWidth-24)/1280,(window.innerHeight-80)/720);
+    stage.style.transform='scale('+Math.max(.2,s)+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(el,k){el.classList.toggle('on',k===i);el.classList.toggle('prev',k<i)});
+    document.getElementById('counter').textContent=(i+1)+' / '+slides.length;
+    document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+    history.replaceState(null,'','#'+(i+1));
+  }
+  document.getElementById('prev').onclick=function(){show(i-1)};
+  document.getElementById('next').onclick=function(){show(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1)}
+    if(['ArrowLeft','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1)}
+    if(e.key==='Home')show(0);
+    if(e.key==='End')show(slides.length-1);
+  });
+  var x0=null;
+  document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)show(i+(dx<0?1:-1));x0=null});
+  window.addEventListener('resize',fit);
+  fit();show(i);
+})();
+</script>
+</body>
+</html>

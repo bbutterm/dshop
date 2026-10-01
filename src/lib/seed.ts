@@ -4,7 +4,7 @@ import { nextDeliveryDates, prevDeliveryDate } from "./delivery";
 import { orderSum } from "./engine";
 import type { DB, Order, OrderEvent, OrderItem, OrderStatus, Product, Route, Store, User } from "./types";
 
-export const DB_VERSION = 5;
+export const DB_VERSION = 6;
 
 export const DEMO = {
   buyer: "u-anna",
@@ -125,16 +125,20 @@ export function createSeed(): DB {
       at_store: "Принят магазином",
       issued: "Выдан покупателю",
     };
-    const at: Record<string, number> = { placed: 0.1, confirmed: 3, assembled: 30, in_transit: 40, at_store: 43, issued: 52 + rand() * 30 };
+    // ранние шаги — от момента заказа, поздние — от утра дня привоза
+    const day = parseDate(opts.date).getTime();
+    const d = (h: number) => new Date(day + h * 3600_000).toISOString();
+    const pickupH = 17 + rand() * 4 + (rand() < 0.4 ? 24 : 0);
+    const at: Record<string, string> = { placed: t(0.1), confirmed: t(2 + rand() * 3), assembled: d(6.5), in_transit: d(8.2), at_store: d(10.5 + rand()), issued: d(pickupH) };
     for (let i = 0; i <= upto; i++) {
       const s = steps[i];
-      h.push({ at: t(at[s]), status: s, text: texts[s], by: s === "placed" ? "buyer" : s === "at_store" || s === "issued" ? "store" : "distributor" });
+      h.push({ at: at[s], status: s, text: texts[s], by: s === "placed" ? "buyer" : s === "at_store" || s === "issued" ? "store" : "distributor" });
     }
     if (opts.status === "unclaimed" || opts.status === "returned") {
-      h.push({ at: t(43 + 24 * store.storageDays + 2), status: "unclaimed", text: "Срок хранения истёк, отмечен невыкуп", by: "store" });
+      h.push({ at: d(24 * store.storageDays + 21), status: "unclaimed", text: "Срок хранения истёк, отмечен невыкуп", by: "store" });
     }
     if (opts.status === "returned") {
-      h.push({ at: t(43 + 24 * 5), status: "returned", text: "Невыкуп забран поставщиком", by: "distributor" });
+      h.push({ at: d(24 * (store.storageDays + 2) + 9), status: "returned", text: "Невыкуп забран поставщиком", by: "distributor" });
     }
     if (opts.status === "cancelled") {
       h.push({ at: t(1), status: "cancelled", text: "Покупатель отменил заказ", by: "buyer" });
