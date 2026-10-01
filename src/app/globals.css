@@ -10,7 +10,7 @@
   --ink: #17201b;
   --ink-2: #2b3530;
   --muted: #5d6862;
-  --faint: #8c958f;
+  --faint: #69736d;
   --line: #ddd6c5;
   --line-2: #cbc2ad;
 
@@ -926,5 +926,161 @@ svg {
 @media (max-width: 520px) {
   .hide-sm {
     display: none !important;
+  }
+}
+
+/* ---------- телефон ---------- */
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+label {
+  touch-action: manipulation;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding-right: 12px;
+  margin: -8px 0;
+  font-size: 13px;
+  color: var(--muted);
+  align-self: flex-start;
+}
+
+.check {
+  min-height: 36px;
+}
+
+.check input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+@media (max-width: 760px) {
+  /* iOS увеличивает страницу при фокусе на поле мельче 16px */
+  .input,
+  .select,
+  .textarea,
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .input--code {
+    font-size: 28px;
+  }
+
+  .btn--sm {
+    min-height: 38px;
+  }
+
+  .table td,
+  .table th {
+    padding: 10px 12px;
+  }
+}
+
+/* таблица → карточки на телефоне: подписи берутся из data-label */
+@media (max-width: 640px) {
+  .table-wrap:has(.table--cards) {
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .table--cards thead {
+    display: none;
+  }
+
+  .table--cards,
+  .table--cards tbody {
+    display: block;
+  }
+
+  .table--cards tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+  }
+
+  .table--cards td {
+    grid-column: 1 / -1;
+    padding: 0;
+    border: 0;
+    font-size: 13px;
+    text-align: left !important;
+  }
+
+  .table--cards td[data-label]::before {
+    content: attr(data-label) " ";
+    color: var(--muted);
+  }
+
+  .table--cards td.card-title {
+    grid-column: 1;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .table--cards td.card-title::before,
+  .table--cards td.card-end::before {
+    content: none;
+  }
+
+  .table--cards td.card-end {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+}
+
+.only-cards {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .only-cards {
+    display: inline;
+  }
+
+  .table--cards .no-cards {
+    display: none;
+  }
+}
+
+/* каталог: поля карточки в строку с переносом */
+@media (max-width: 640px) {
+  .table--flow tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+  }
+
+  .table--flow td {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .table--flow td.card-title {
+    flex: 1 1 100%;
+    display: block;
   }
 }

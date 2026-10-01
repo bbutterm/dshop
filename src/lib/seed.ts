@@ -4,7 +4,7 @@ import { nextDeliveryDates, prevDeliveryDate } from "./delivery";
 import { orderSum } from "./engine";
 import type { DB, Order, OrderEvent, OrderItem, OrderStatus, Product, Route, Store, User } from "./types";
 
-export const DB_VERSION = 6;
+export const DB_VERSION = 7;
 
 export const DEMO = {
   buyer: "u-anna",
@@ -107,6 +107,8 @@ export function createSeed(): DB {
       return { productId: p.id, name: p.name, unit: p.unit, price: p.price, qty: q };
     });
     const created = new Date(parseDate(addDays(opts.date, -2)).getTime() + (9 + rand() * 10) * 3600_000);
+    // заказы на будущий привоз оформлены недавно, а не «через два дня»
+    if (created.getTime() > Date.now() - 6 * 3600_000) created.setTime(Date.now() - (6 + rand() * 30) * 3600_000);
     const t = (h: number) => new Date(created.getTime() + h * 3600_000).toISOString();
     const dist = db.distributors.find((d) => d.id === opts.dist)!;
     const store = db.stores.find((s) => s.id === opts.store)!;

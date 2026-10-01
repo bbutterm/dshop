@@ -60,6 +60,16 @@
   td{padding:13px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
   td:first-child{font-weight:600}
   .pill{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--green-wash);color:var(--green);font-weight:600;font-size:14px}
+  .homescreen{flex:0 0 210px;height:390px;border-radius:38px;border:9px solid var(--ink);background:linear-gradient(160deg,#2c7653,#123826 60%,#0f1f18);padding:22px 20px;position:relative;box-shadow:8px 8px 0 rgba(0,0,0,.25);color:#fff}
+  .hs-time{font-family:var(--text);font-weight:600;font-size:13px;text-align:center;margin-bottom:18px}
+  .hs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 12px}
+  .hs-app{display:block;aspect-ratio:1;border-radius:13px;opacity:.85}
+  .hs-ours{opacity:1;overflow:hidden;box-shadow:0 0 0 3px var(--mustard),0 6px 16px rgba(0,0,0,.35);animation:pulse 2.4s ease-in-out infinite}
+  .hs-ours img{width:100%;height:100%;display:block}
+  .hs-cell{position:relative}
+  .hs-cell i{position:absolute;left:-12px;right:-12px;top:100%;margin-top:5px;font-style:normal;font-size:10px;font-weight:600;text-align:center;font-family:var(--text)}
+  .hs-dock{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px;border-radius:24px;background:rgba(255,255,255,.18)}
+  @keyframes pulse{50%{transform:scale(1.08)}}
   /* навигация */
   .nav{position:fixed;left:50%;bottom:18px;translate:-50% 0;display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:rgba(23,32,27,.82);backdrop-filter:blur(8px);color:#fff;z-index:10;font-family:var(--mono);font-size:13px}
   .nav button{width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:inherit;font-size:18px;cursor:pointer}
@@ -85,6 +95,7 @@
     .big{font-size:56px!important}
     table{font-size:14px}
     .phone{width:220px;height:auto}
+    .homescreen{flex:none;width:240px;height:450px;margin:0 auto}
   }
   @media print{
     body{background:#fff;overflow:visible}
@@ -208,6 +219,32 @@
   <div class="foot"><span>Закупка</span><span>07</span></div>
 </section>
 
+<!-- PWA -->
+<section class="slide">
+  <div class="k">Продукт · приложение без магазинов приложений</div>
+  <h2 style="font-size:44px">Ставится на телефон <em>в&nbsp;два касания</em></h2>
+  <div class="row" style="margin-top:26px;gap:44px;align-items:center">
+    <div class="homescreen" aria-label="Иконка «Закупки» на рабочем столе телефона">
+      <div class="hs-time">9:41</div>
+      <div class="hs-grid">
+        <span class="hs-app" style="background:#4b7bd9"></span><span class="hs-app" style="background:#2fb36b"></span><span class="hs-app" style="background:#f2c94c"></span><span class="hs-app" style="background:#e8836b"></span>
+        <span class="hs-app" style="background:#9b6bd9"></span><span class="hs-app" style="background:#3a3f45"></span>
+        <span class="hs-cell"><span class="hs-app hs-ours"><img src="/icons/icon-192.png" alt=""></span><i>Закупка</i></span>
+        <span class="hs-app" style="background:#58c4dc"></span>
+      </div>
+      <div class="hs-dock"><span class="hs-app" style="background:#2fb36b"></span><span class="hs-app" style="background:#4b7bd9"></span><span class="hs-app" style="background:#f2f2f2"></span><span class="hs-app" style="background:#e8836b"></span></div>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Без App Store и Google Play</h3><p>Ссылка в листовке или чате дома → «Установить». Обновления — сразу у всех, без модерации.</p></div>
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Как настоящее приложение</h3><p>Иконка на рабочем столе, полный экран без адресной строки, ярлыки «Корзина», «Мои заказы», «Выдача».</p></div>
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Работает без сети</h3><p>Открывается в подвале магазина и в маршрутке: код выдачи и корзина сохранены на телефоне.</p></div>
+      <div class="card" style="padding:18px 20px"><h3 style="font-size:18px">Камера продавца</h3><p>Смартфон продавца читает QR выдачи и штрихкод маркировки — сканер не нужен.</p></div>
+    </div>
+  </div>
+  <p style="font-size:14px;color:var(--muted);margin-top:14px">Android: Chrome, Яндекс Браузер · iPhone: Safari → «Поделиться» → «На экран „Домой“». Push-уведомления — следующий шаг (iOS 16.4+ для установленных приложений).</p>
+  <div class="foot"><span>Закупка</span><span>08</span></div>
+</section>
+
 <!-- 8 -->
 <section class="slide greenbg">
   <div class="k">Деньги</div>
@@ -218,7 +255,7 @@
     <div><div class="num" style="font-size:22px">Платформа</div><p style="margin-top:10px;font-size:16px;line-height:1.5;color:rgba(255,255,255,.85)">На пилоте комиссия 0. После — процент с оборота канала у дистрибьютора.</p></div>
   </div>
   <p style="font-size:15px;color:rgba(255,255,255,.7);max-width:900px">Запасной вариант, если у дистрибьютора нет эквайринга: оплата на кассе магазина агентским чеком от имени дистрибьютора. Схема — на проверку бухгалтерам обеих сторон.</p>
-  <div class="foot"><span>Закупка</span><span>08</span></div>
+  <div class="foot"><span>Закупка</span><span>09</span></div>
 </section>
 
 <!-- 9 -->
@@ -231,7 +268,7 @@
     <div class="card"><h3>Магазину нужен поток</h3><p>Магазины у дома теряют трафик сетям и доставкам. Каждая выдача — визит, плата и шанс продать своё.</p></div>
     <div class="card"><h3>Дистрибьютору нужен канал</h3><p>Прямой спрос без агентов: предоплаченный объём через точки, куда он уже возит, по своей цене.</p></div>
   </div>
-  <div class="foot"><span>Закупка</span><span>09</span></div>
+  <div class="foot"><span>Закупка</span><span>10</span></div>
 </section>
 
 <!-- 10 -->
@@ -256,7 +293,7 @@
     </table>
   </div>
   <p style="font-size:14px;color:var(--muted)">Все метрики считаются в админке платформы автоматически — в прототипе уже на демо-данных.</p>
-  <div class="foot"><span>Закупка</span><span>10</span></div>
+  <div class="foot"><span>Закупка</span><span>11</span></div>
 </section>
 
 <!-- 11 -->
@@ -273,7 +310,7 @@
       <tr><td>Недовоз позиции</td><td>Отметка при приёмке, автоматический возврат покупателю за непривезённое</td></tr>
     </tbody>
   </table>
-  <div class="foot"><span>Закупка</span><span>11</span></div>
+  <div class="foot"><span>Закупка</span><span>12</span></div>
 </section>
 
 <!-- 12 -->
@@ -282,12 +319,12 @@
   <h2>От прототипа до решения о масштабе</h2>
   <div class="cols grow" style="grid-template-columns:repeat(5,1fr);margin-top:44px;gap:12px;align-items:start">
     <div class="card" style="background:var(--green-wash);border-color:var(--green)"><span class="stamp" style="color:var(--green);font-size:12px">готово</span><h3 style="margin-top:14px;font-size:18px">Схема процесса</h3><p>Роли, статусы, деньги</p></div>
-    <div class="card" style="background:var(--green-wash);border-color:var(--green)"><span class="stamp" style="color:var(--green);font-size:12px">готово</span><h3 style="margin-top:14px;font-size:18px">Прототип</h3><p>Все роли, сквозной флоу заказа</p></div>
+    <div class="card" style="background:var(--green-wash);border-color:var(--green)"><span class="stamp" style="color:var(--green);font-size:12px">готово</span><h3 style="margin-top:14px;font-size:18px">Прототип</h3><p>Все роли, сквозной флоу заказа, PWA на телефон</p></div>
     <div class="card ink"><span class="k">сейчас</span><h3 style="margin-top:14px;font-size:18px">MVP</h3><p>База и вход по СМС, эквайринг, уведомления</p></div>
     <div class="card"><span class="k">далее</span><h3 style="margin-top:14px;font-size:18px">Пилот</h3><p>6–8 недель, еженедельный разбор метрик</p></div>
     <div class="card"><span class="k">далее</span><h3 style="margin-top:14px;font-size:18px">Масштаб</h3><p>Новые дистрибьюторы, охлаждёнка, второй город</p></div>
   </div>
-  <div class="foot"><span>Закупка</span><span>12</span></div>
+  <div class="foot"><span>Закупка</span><span>13</span></div>
 </section>
 
 <!-- 13 -->
@@ -299,23 +336,23 @@
     <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Связи</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Знакомство с дистрибьюторами кондитерки и бакалеи в Брянске и Орле.</p></div>
     <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Экспертиза</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Юридическая проверка агентской схемы и онлайн-касс.</p></div>
   </div>
-  <div class="foot"><span>Закупка</span><span>13</span></div>
+  <div class="foot"><span>Закупка</span><span>14</span></div>
 </section>
 
 <!-- 14 -->
 <section class="slide" style="justify-content:center">
   <div class="logo" style="font-size:30px"><svg width="44" height="44" viewBox="0 0 32 32"><path d="M9 4h17a3 3 0 0 1 3 3v18a3 3 0 0 1-3 3H9L3 16Z" fill="#E3A82B"/><circle cx="9.5" cy="16" r="2.2" fill="#F2EEE3"/><path d="M15 11.5h9M15 16h7M15 20.5h9" stroke="#17201B" stroke-width="2.4" stroke-linecap="round"/></svg>закупка</div>
   <h1 class="big" style="font-size:88px;font-weight:800;margin-top:28px">Попробуйте сами.</h1>
-  <p class="lead">Прототип открыт: войдите покупателем, дистрибьютором и магазином в соседних вкладках и проведите заказ от корзины до выдачи.</p>
-  <p style="margin-top:28px"><a href="/" style="display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:14px;background:var(--mustard);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);color:var(--ink);font-weight:700;font-size:18px;text-decoration:none">Открыть прототип →</a></p>
-  <div class="foot"><span>Закупка · рабочий документ, цифры условные</span><span>14</span></div>
+  <p class="lead">Прототип открыт: пройдите сценарий показа — заказ от корзины до выдачи через все роли. С телефона его можно сразу добавить на главный экран.</p>
+  <p style="margin-top:28px"><a href="/demo" style="display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:14px;background:var(--mustard);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);color:var(--ink);font-weight:700;font-size:18px;text-decoration:none">Сценарий показа →</a> <a href="/" style="margin-left:18px;color:var(--ink);font-weight:600">или главная прототипа</a></p>
+  <div class="foot"><span>Закупка · рабочий документ, цифры условные</span><span>15</span></div>
 </section>
 
 </div></div>
 
 <nav class="nav" aria-label="Слайды">
   <button id="prev" aria-label="Назад">←</button>
-  <span class="counter" id="counter">1 / 14</span>
+  <span class="counter" id="counter">1 / 0</span>
   <button id="next" aria-label="Вперёд">→</button>
   <a href="/" title="Открыть прототип">демо ↗</a>
 </nav>

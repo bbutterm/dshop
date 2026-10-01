@@ -22,7 +22,7 @@ export default function SupplierPage() {
 
   return (
     <div className="stack fade-in" style={{ ["--gap" as string]: "16px" }}>
-      <Link href="/buyer" className="row small muted" style={{ ["--gap" as string]: "6px" }}>
+      <Link href="/buyer" className="back">
         <ArrowLeft size={16} /> Назад
       </Link>
       <div

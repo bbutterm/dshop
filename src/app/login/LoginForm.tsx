@@ -42,7 +42,7 @@ export function LoginForm() {
   return (
     <main className={styles.page}>
       <div className={styles.col}>
-        <Link href="/" className="row muted small" style={{ ["--gap" as string]: "6px" }}>
+        <Link href="/" className="back">
           <ArrowLeft size={16} /> На главную
         </Link>
         <Logo size={34} />

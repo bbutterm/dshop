@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { AlertTriangle, Minus, PackageCheck, Plus, ScanLine, Truck } from "lucide-react";
+import { useRef, useState, useSyncExternalStore } from "react";
+import { AlertTriangle, Camera, Minus, PackageCheck, Plus, ScanLine, Truck } from "lucide-react";
+import { canScan, ScannerSheet } from "@/components/Scanner";
 import { Barcode } from "@/components/Codes";
 import { Sheet } from "@/components/Sheet";
 import { StatusChip } from "@/components/StatusChip";
@@ -19,6 +20,8 @@ export default function IncomingPage() {
   const [scan, setScan] = useState("");
   const [open, setOpen] = useState<Order | null>(null);
   const input = useRef<HTMLInputElement>(null);
+  const [scanning, setScanning] = useState(false);
+  const camera = useSyncExternalStore(() => () => {}, canScan, () => false);
 
   const mine = db.orders.filter((o) => o.storeId === storeId);
   const moving = mine.filter((o) => o.status === "in_transit");
@@ -37,6 +40,18 @@ export default function IncomingPage() {
     });
   };
 
+  const lookup = (value: string) => {
+    const o = findByLabel(db, storeId, value);
+    if (!o) toast({ title: `Маркировка «${value}» не найдена`, body: "Проверьте, что пакет адресован в этот магазин.", tone: "error" });
+    else if (o.status !== "in_transit") toast({ title: `Заказ №${o.number} уже ${o.status === "at_store" ? "на полке" : "обработан"}`, tone: "warn" });
+    else setOpen(o);
+    setScan("");
+  };
+  const onScan = (value: string) => {
+    setScanning(false);
+    lookup(value);
+  };
+
   const acceptAll = async (orders: Order[]) => {
     for (const o of orders) await run("receiveOrder", o.id);
     toast({ title: `Принято ${pn(orders.length, ["заказ", "заказа", "заказов"])}`, body: "Покупатели получили коды выдачи.", tone: "good" });
@@ -53,11 +68,7 @@ export default function IncomingPage() {
         className={styles.scan}
         onSubmit={(e) => {
           e.preventDefault();
-          const o = findByLabel(db, storeId, scan);
-          if (!o) toast({ title: `Маркировка «${scan}» не найдена`, body: "Проверьте, что пакет адресован в этот магазин.", tone: "error" });
-          else if (o.status !== "in_transit") toast({ title: `Заказ №${o.number} уже ${o.status === "at_store" ? "на полке" : "обработан"}`, tone: "warn" });
-          else setOpen(o);
-          setScan("");
+          lookup(scan);
         }}
       >
         <ScanLine size={22} />
@@ -68,8 +79,20 @@ export default function IncomingPage() {
           onChange={(e) => setScan(e.target.value.toUpperCase())}
           placeholder="DP-1047 или номер заказа"
         />
+        {camera && (
+          <button type="button" className="btn btn--icon" onClick={() => setScanning(true)} aria-label="Сканировать камерой">
+            <Camera size={18} />
+          </button>
+        )}
         <button className="btn btn--accent">Найти</button>
       </form>
+      <ScannerSheet
+        open={scanning}
+        onClose={() => setScanning(false)}
+        onResult={onScan}
+        title="Маркировка пакета"
+        hint="Наведите камеру на штрихкод на наклейке заказа"
+      />
 
       <section className="stack">
         <div className="section-title">

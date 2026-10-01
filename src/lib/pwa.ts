@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -64,20 +64,27 @@ export function useInstall() {
 }
 
 /** Показывать ли баннер: пользователь мог его закрыть */
+const dismissListeners = new Set<() => void>();
 export function useDismissed(key: string) {
-  const [dismissed, setDismissed] = useState(true);
-  useEffect(() => {
-    try {
-      setDismissed(localStorage.getItem(key) === "1");
-    } catch {
-      setDismissed(false);
-    }
-  }, [key]);
+  const dismissed = useSyncExternalStore(
+    (cb) => {
+      dismissListeners.add(cb);
+      return () => dismissListeners.delete(cb);
+    },
+    () => {
+      try {
+        return localStorage.getItem(key) === "1";
+      } catch {
+        return false;
+      }
+    },
+    () => true,
+  );
   const dismiss = () => {
-    setDismissed(true);
     try {
       localStorage.setItem(key, "1");
     } catch {}
+    dismissListeners.forEach((l) => l());
   };
   return [dismissed, dismiss] as const;
 }

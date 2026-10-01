@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Delete, PackageOpen, ScanLine } from "lucide-react";
 import { CodeDigits } from "@/components/Codes";
+import { canScan, ScannerSheet, vibrate } from "@/components/Scanner";
 import { byId, findByCode } from "@/lib/engine";
 import { fmtRelDay, isoDate, today } from "@/lib/dates";
 import { useAction, useApp } from "@/lib/data/provider";
@@ -17,6 +18,9 @@ export default function IssuePage() {
   const [code, setCode] = useState("");
   const [picked, setPicked] = useState<string | null>(null);
   const [done, setDone] = useState<Order | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const camera = useSyncExternalStore(() => () => {}, canScan, () => false);
+  const sideRef = useRef<HTMLElement>(null);
 
   const mine = db.orders.filter((o) => o.storeId === storeId);
   const onShelf = mine.filter((o) => o.status === "at_store");
@@ -24,6 +28,19 @@ export default function IssuePage() {
   const found = picked ? byId(db.orders, picked) : code.length === 6 ? findByCode(db, storeId, code) : undefined;
   const wrong = code.length === 6 && !found;
   const store = byId(db.stores, storeId)!;
+
+  const onScan = useCallback((value: string) => {
+    setScanning(false);
+    setPicked(null);
+    setDone(null);
+    setCode(value.replace(/\D/g, "").slice(0, 6));
+  }, []);
+
+  const hasResult = !!found || !!done;
+  useEffect(() => {
+    // на телефоне карточка заказа под клавиатурой — подтягиваем её в зону видимости
+    if (hasResult && window.innerWidth < 760) sideRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hasResult]);
 
   const press = (k: string) => {
     setDone(null);
@@ -65,19 +82,27 @@ export default function IssuePage() {
         <button
           className="btn btn--block"
           onClick={() => {
+            if (camera) return setScanning(true);
             const o = onShelf[Math.floor(Math.random() * onShelf.length)];
             if (o) {
               setCode(o.pickupCode);
               setDone(null);
             }
           }}
-          disabled={!onShelf.length}
+          disabled={!camera && !onShelf.length}
         >
-          <ScanLine size={18} /> Сканировать QR (демо)
+          <ScanLine size={18} /> {camera ? "Сканировать QR камерой" : "Сканировать QR (демо)"}
         </button>
+        <ScannerSheet
+          open={scanning}
+          onClose={() => setScanning(false)}
+          onResult={onScan}
+          title="QR покупателя"
+          hint="Наведите камеру на QR-код на экране покупателя"
+        />
       </section>
 
-      <section className={styles.side}>
+      <section className={styles.side} ref={sideRef}>
         {done && !found && (
           <div className={`card stack fade-in ${styles.success}`}>
             <span className="stamp" style={{ color: "var(--green)", alignSelf: "flex-start" }}>
@@ -97,6 +122,7 @@ export default function IssuePage() {
             onCancel={reset}
             onIssue={async () => {
               await run("issueOrder", found.id);
+              vibrate(25);
               setDone(found);
               reset();
             }}

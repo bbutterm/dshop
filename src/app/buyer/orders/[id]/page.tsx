@@ -34,7 +34,7 @@ function OrderView() {
 
   return (
     <div className="stack fade-in" style={{ ["--gap" as string]: "16px" }}>
-      <Link href="/buyer/orders" className="row small muted" style={{ ["--gap" as string]: "6px" }}>
+      <Link href="/buyer/orders" className="back">
         <ArrowLeft size={16} /> Заказы
       </Link>
 

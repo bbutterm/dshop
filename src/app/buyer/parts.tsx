@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Minus, Plus, Truck } from "lucide-react";
 import { ProductArt } from "@/components/ProductArt";
+import { vibrate } from "@/components/Scanner";
 import { Sheet } from "@/components/Sheet";
 import { byId, findRoute } from "@/lib/engine";
 import { fmtRelDay } from "@/lib/dates";
@@ -14,7 +15,7 @@ import type { Product } from "@/lib/types";
 import { buyerStore, qtyInCart, savingPct } from "./lib";
 import styles from "./parts.module.css";
 
-export function Stepper({ product, light = false }: { product: Product; light?: boolean }) {
+export function Stepper({ product, light = false, block = false }: { product: Product; light?: boolean; block?: boolean }) {
   const { db, user } = useApp();
   const { run } = useAction();
   const store = buyerStore(db, user);
@@ -26,8 +27,26 @@ export function Stepper({ product, light = false }: { product: Product; light?: 
       </Link>
     );
   }
-  const set = (q: number) => run("cartSet", user.id, store.id, product.id, q);
+  const set = (q: number) => {
+    vibrate(q > qty ? 10 : 6);
+    return run("cartSet", user.id, store.id, product.id, q);
+  };
   if (qty === 0) {
+    if (block) {
+      return (
+        <button
+          className={styles.addBlock}
+          disabled={product.stock === 0}
+          onClick={(e) => {
+            e.stopPropagation();
+            set(1);
+          }}
+          aria-label={`${product.stock === 0 ? "Нет" : "В корзину"}: ${product.name}`}
+        >
+          <Plus size={17} strokeWidth={2.6} aria-hidden /> {product.stock === 0 ? "Нет" : "В корзину"}
+        </button>
+      );
+    }
     return (
       <button
         className={styles.add}
@@ -43,7 +62,7 @@ export function Stepper({ product, light = false }: { product: Product; light?: 
     );
   }
   return (
-    <div className={`qty ${light ? "qty--light" : ""}`} onClick={(e) => e.stopPropagation()}>
+    <div className={`qty ${light ? "qty--light" : ""} ${block ? styles.qtyBlock : ""}`} onClick={(e) => e.stopPropagation()}>
       <button onClick={() => set(qty - 1)} aria-label="Меньше">
         <Minus size={16} />
       </button>
@@ -70,13 +89,11 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: (p:
           {product.brand} · {product.weight}
         </div>
       </div>
-      <div className={styles.buy}>
-        <div className={styles.price}>
-          <b>{rub(product.price)}</b>
-          <s className="tiny faint">{rub(product.shelfPrice)}</s>
-        </div>
-        <Stepper product={product} />
+      <div className={styles.price}>
+        <b>{rub(product.price)}</b>
+        <s className="tiny faint">{rub(product.shelfPrice)}</s>
       </div>
+      <Stepper product={product} block />
       {product.stock > 0 && product.stock < 5 && <div className={styles.low}>осталось {product.stock}</div>}
       {product.stock === 0 && <div className={styles.low}>нет на складе</div>}
     </div>

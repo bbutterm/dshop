@@ -31,7 +31,7 @@ export function BuyerShell({ children }: { children: React.ReactNode }) {
     <div className={styles.app}>
       <header className={styles.top}>
         <div className={styles.topInner}>
-          <Link href="/buyer" aria-label="Главная">
+          <Link href="/buyer" aria-label="Главная" className={styles.home}>
             <LogoMark size={30} />
           </Link>
           <Link href="/buyer/stores" className={styles.storePick}>

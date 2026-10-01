@@ -110,7 +110,7 @@ export default function CatalogPage() {
       </div>
 
       <div className="table-wrap">
-        <table className="table">
+        <table className="table table--cards table--flow">
           <thead>
             <tr>
               <th></th>
@@ -139,17 +139,17 @@ function Row({ p, onPatch }: { p: Product; onPatch: (patch: Partial<Product>) =>
   const num = (v: string) => Number(v.replace(",", "."));
   return (
     <tr style={{ opacity: p.active ? 1 : 0.5 }}>
-      <td style={{ width: 52 }}>
+      <td style={{ width: 52 }} className="no-cards">
         <ProductArt product={p} size={40} />
       </td>
-      <td>
+      <td className="card-title">
         <b className="small">{p.name}</b>
         <div className="tiny muted">
           {p.brand} · {p.weight} · {p.category}
         </div>
       </td>
-      <td className="mono small">{p.sku}</td>
-      <td className="r">
+      <td className="mono small no-cards">{p.sku}</td>
+      <td className="r" data-label="цена">
         <input
           className="input mono"
           style={{ width: 96, minHeight: 34, padding: "4px 8px", textAlign: "right" }}
@@ -158,13 +158,13 @@ function Row({ p, onPatch }: { p: Product; onPatch: (patch: Partial<Product>) =>
           onBlur={(e) => num(e.target.value) > 0 && num(e.target.value) !== p.price && onPatch({ price: num(e.target.value) })}
         />
       </td>
-      <td className="r mono small muted nowrap">
+      <td className="r mono small muted nowrap no-cards">
         {rub(p.shelfPrice)}
         <div className="tiny" style={{ color: "var(--green)" }}>
           −{Math.round((1 - p.price / p.shelfPrice) * 100)}%
         </div>
       </td>
-      <td className="r">
+      <td className="r" data-label="остаток">
         <input
           className="input mono"
           style={{ width: 72, minHeight: 34, padding: "4px 8px", textAlign: "right", color: p.stock < 5 ? "var(--tomato)" : undefined }}
@@ -173,7 +173,7 @@ function Row({ p, onPatch }: { p: Product; onPatch: (patch: Partial<Product>) =>
           onBlur={(e) => num(e.target.value) >= 0 && num(e.target.value) !== p.stock && onPatch({ stock: Math.round(num(e.target.value)) })}
         />
       </td>
-      <td>
+      <td data-label="в продаже">
         <label className="check">
           <input type="checkbox" checked={p.active} onChange={(e) => onPatch({ active: e.target.checked })} />
         </label>

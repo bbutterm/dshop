@@ -33,7 +33,7 @@ export default function DistOrder() {
 
   return (
     <>
-      <Link href="/distributor/orders" className="row small muted" style={{ ["--gap" as string]: "6px", marginBottom: 12 }}>
+      <Link href="/distributor/orders" className="back">
         <ArrowLeft size={16} /> Заказы
       </Link>
       <PageHead

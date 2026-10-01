@@ -50,7 +50,7 @@ export default function DistOrders() {
         </select>
       </div>
       <div className="table-wrap">
-        <table className="table">
+        <table className="table table--cards">
           <thead>
             <tr>
               <th>№</th>
@@ -65,15 +65,15 @@ export default function DistOrders() {
           <tbody>
             {list.map((o) => (
               <tr key={o.id} className="clickable" onClick={() => router.push(`/distributor/orders/${o.id}`)}>
-                <td className="mono">
-                  <b>{o.number}</b>
+                <td className="mono card-title">
+                  <b>№{o.number}</b> <span className="muted only-cards">· {rub(o.total - o.refund)}</span>
                 </td>
-                <td className="muted small nowrap">{fmtDateTime(o.createdAt)}</td>
-                <td>{byId(db.stores, o.storeId)?.name}</td>
-                <td className="nowrap">{fmtRelDay(o.deliveryDate)}</td>
-                <td className="r mono">{o.items.length}</td>
-                <td className="r mono nowrap">{rub(o.total - o.refund)}</td>
-                <td>
+                <td className="muted small nowrap" data-label="оформлен">{fmtDateTime(o.createdAt)}</td>
+                <td data-label="магазин">{byId(db.stores, o.storeId)?.name}</td>
+                <td className="nowrap" data-label="привоз">{fmtRelDay(o.deliveryDate)}</td>
+                <td className="r mono" data-label="позиций">{o.items.length}</td>
+                <td className="r mono nowrap no-cards">{rub(o.total - o.refund)}</td>
+                <td className="card-end">
                   <StatusChip status={o.status} />
                 </td>
               </tr>

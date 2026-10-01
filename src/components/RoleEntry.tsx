@@ -27,7 +27,7 @@ export function RoleEntry() {
               <span className={styles.icon}>
                 <Icon size={22} strokeWidth={2} />
               </span>
-              <span className="mono tiny" style={{ opacity: 0.6 }}>
+              <span className="mono tiny muted">
                 0{i + 1}
               </span>
               <b className={styles.role}>{r.label}</b>

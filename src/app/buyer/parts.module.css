@@ -80,18 +80,13 @@
   margin-bottom: 2px;
 }
 
-.buy {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 10px 2px 0 4px;
-}
-
 .price {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 8px;
   line-height: 1.1;
+  padding: 8px 4px 10px;
 }
 
 .price b {
@@ -128,12 +123,40 @@
   opacity: 0.35;
 }
 
-.card :global(.qty) {
-  height: 38px;
+.addBlock {
+  width: 100%;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--mustard);
+  border: 1.5px solid var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  transition: transform 0.08s ease;
 }
 
-.card :global(.qty) button {
-  width: 30px;
+.addBlock:active {
+  transform: translateY(1px);
+}
+
+.addBlock:disabled {
+  opacity: 0.4;
+  background: var(--paper-2);
+}
+
+.qtyBlock {
+  width: 100%;
+  height: 42px;
+  justify-content: space-between;
+  border-radius: 12px;
+}
+
+.qtyBlock button {
+  width: 48px;
+  height: 42px;
 }
 
 .low {

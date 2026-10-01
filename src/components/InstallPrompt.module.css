@@ -9,17 +9,22 @@
   border: 1.5px dashed var(--line-2);
 }
 
-.icon img {
-  display: block;
+.icon {
+  flex: none;
+  width: 42px;
+  height: 42px;
   border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: var(--green);
 }
 
 .close {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 26px;
-  height: 26px;
+  top: 4px;
+  right: 4px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   display: grid;
   place-items: center;

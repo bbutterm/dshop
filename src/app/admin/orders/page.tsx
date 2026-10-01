@@ -47,7 +47,7 @@ function Orders() {
 
       <input className="input" style={{ maxWidth: 320, marginBottom: 12 }} placeholder="Номер или покупатель" value={q} onChange={(e) => setQ(e.target.value)} />
       <div className="table-wrap">
-        <table className="table">
+        <table className="table table--cards">
           <thead>
             <tr>
               <th>№</th>
@@ -62,13 +62,15 @@ function Orders() {
           <tbody>
             {list.slice(0, 80).map((x) => (
               <tr key={x.id} className="clickable" onClick={() => setOpen(x.id)}>
-                <td className="mono">{x.number}</td>
-                <td className="small">{byId(db.users, x.buyerId)?.name}</td>
-                <td className="small">{byId(db.distributors, x.distributorId)?.name}</td>
-                <td className="small">{byId(db.stores, x.storeId)?.name}</td>
-                <td className="small nowrap">{fmtRelDay(x.deliveryDate)}</td>
-                <td className="r mono nowrap">{rub(x.total - x.refund)}</td>
-                <td>
+                <td className="mono card-title">
+                  <b>№{x.number}</b>
+                </td>
+                <td className="small" data-label="покупатель">{byId(db.users, x.buyerId)?.name}</td>
+                <td className="small" data-label="поставщик">{byId(db.distributors, x.distributorId)?.name}</td>
+                <td className="small" data-label="магазин">{byId(db.stores, x.storeId)?.name}</td>
+                <td className="small nowrap" data-label="привоз">{fmtRelDay(x.deliveryDate)}</td>
+                <td className="r mono nowrap" data-label="сумма">{rub(x.total - x.refund)}</td>
+                <td className="card-end">
                   <StatusChip status={x.status} />
                 </td>
               </tr>

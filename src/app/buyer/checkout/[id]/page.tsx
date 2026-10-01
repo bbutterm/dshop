@@ -35,7 +35,7 @@ function Checkout() {
 
   return (
     <div className="stack fade-in" style={{ ["--gap" as string]: "16px" }}>
-      <Link href="/buyer/cart" className="row small muted" style={{ ["--gap" as string]: "6px" }}>
+      <Link href="/buyer/cart" className="back">
         <ArrowLeft size={16} /> Корзина
       </Link>
       <h1 className="h1">Оформление</h1>

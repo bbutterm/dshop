@@ -3,6 +3,7 @@
 import { Download, PlusSquare, Share, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { registerServiceWorker, useDismissed, useInstall } from "@/lib/pwa";
+import { LogoMark } from "./Logo";
 import { Sheet } from "./Sheet";
 import styles from "./InstallPrompt.module.css";
 
@@ -28,7 +29,7 @@ export function InstallBanner({ variant = "card" }: { variant?: "card" | "row" }
       {variant === "card" ? (
         <div className={styles.card}>
           <span className={styles.icon}>
-            <img src="/icons/icon-192.png" alt="" width={40} height={40} />
+            <LogoMark size={26} />
           </span>
           <span className="grow stack" style={{ ["--gap" as string]: "2px" }}>
             <b className="small">Закупка на главном экране</b>
