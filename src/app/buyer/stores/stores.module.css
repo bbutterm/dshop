@@ -6,7 +6,7 @@
   border: 1.5px solid var(--ink);
 }
 
-.map svg {
+.map > svg {
   width: 100%;
   height: 100%;
 }
