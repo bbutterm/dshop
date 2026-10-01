@@ -1,0 +1,30 @@
+.chart {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  height: 200px;
+  align-items: end;
+}
+
+.col {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.col i {
+  display: block;
+  width: 100%;
+  max-width: 44px;
+  min-height: 3px;
+  border-radius: 8px 8px 2px 2px;
+  background: var(--green);
+  border: 1.5px solid var(--ink);
+}
+
+.col i[data-last="true"] {
+  background: var(--mustard);
+}

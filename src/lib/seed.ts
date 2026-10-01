@@ -4,7 +4,7 @@ import { nextDeliveryDates, prevDeliveryDate } from "./delivery";
 import { orderSum } from "./engine";
 import type { DB, Order, OrderEvent, OrderItem, OrderStatus, Product, Route, Store, User } from "./types";
 
-export const DB_VERSION = 3;
+export const DB_VERSION = 5;
 
 export const DEMO = {
   buyer: "u-anna",
@@ -35,6 +35,14 @@ const users: User[] = [
   { id: "u-elena", role: "buyer", name: "Елена Кузина", phone: "79101110006", favoriteStoreId: "s-romashka" },
   { id: "u-dmitry", role: "buyer", name: "Дмитрий Орлов", phone: "79101110007", favoriteStoreId: "s-sergeich" },
   { id: "u-irina", role: "buyer", name: "Ирина Белова", phone: "79101110008", favoriteStoreId: "s-romashka" },
+  // разовые покупатели — пришли по листовке, попробовали один раз
+  ...["Светлана Жукова", "Артём Филин", "Наталья Сорокина", "Роман Гусев", "Юлия Миронова"].map((name, i) => ({
+    id: `u-guest${i}`,
+    role: "buyer" as const,
+    name,
+    phone: `7910222000${i}`,
+    favoriteStoreId: "s-romashka",
+  })),
 ];
 
 const routes: Route[] = [
@@ -189,7 +197,8 @@ export function createSeed(): DB {
   historyDates.forEach((date, i) => {
     const n = 2 + Math.floor(i / 3) + Math.floor(rand() * 2); // спрос растёт от недели к неделе
     for (let k = 0; k < n; k++) {
-      const b = buyers[Math.floor(rand() * (i < 4 ? 4 : buyers.length))];
+      const guest = i >= 4 && k === n - 1 && i - 4 < 5;
+      const b = guest ? `u-guest${i - 4}` : buyers[Math.floor(rand() * (i < 4 ? 4 : buyers.length))];
       const items: [number, number][] = [];
       const lines = 2 + Math.floor(rand() * 3);
       for (let j = 0; j < lines; j++) items.push([Math.floor(rand() * 18), 1 + Math.floor(rand() * 2)]);
@@ -242,7 +251,7 @@ export function createSeed(): DB {
   db.carts.push({
     buyerId: "u-anna",
     storeId: "s-romashka",
-    lines: { "d-desna": [{ productId: "p-d8", qty: 1 }, { productId: "p-d12", qty: 1 }, { productId: "p-d0", qty: 1 }] },
+    lines: { "d-desna": [{ productId: "p-d8", qty: 1 }, { productId: "p-d12", qty: 1 }, { productId: "p-d0", qty: 2 }] },
   });
 
   // стартовые уведомления
