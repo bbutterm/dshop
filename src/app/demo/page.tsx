@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { ArrowUpRight, Check, RotateCcw } from "lucide-react";
 import { CodeDigits } from "@/components/Codes";
 import { Logo } from "@/components/Logo";
@@ -21,10 +22,20 @@ const as = (userId: string, next: string) => `/login?as=${userId}&next=${encodeU
 /** Сценарий показа: один заказ проходит все роли. Прогресс обновляется вживую из соседних вкладок */
 export default function DemoScript() {
   const ctx = useData();
-  if (!ctx?.db) return <Loading />;
+  // с базой данных страница смотрит на заказы глазами платформы — входим как админ
+  const needAdmin = ctx?.backend === "supabase" && !!ctx.db && ctx.user?.role !== "admin";
+  const asked = useRef(false);
+  useEffect(() => {
+    if (needAdmin && !asked.current) {
+      asked.current = true;
+      void ctx?.login("u-admin");
+    }
+  }, [needAdmin, ctx]);
+  if (!ctx?.db || needAdmin) return <Loading />;
   const db = ctx.db;
+  const buyerId = ctx.idOf(DEMO.buyer);
   // заказ сценария — последний, созданный Анной в приложении (у демо-заказов id вида «o-1043»)
-  const o = db.orders.find((x) => x.buyerId === DEMO.buyer && !x.id.startsWith("o-") && x.status !== "cancelled");
+  const o = db.orders.find((x) => x.buyerId === buyerId && !x.id.startsWith("o-") && x.status !== "cancelled");
 
   const steps: { who: string; title: string; text: React.ReactNode; done: boolean; href?: string; cta: string }[] = [
     {

@@ -1,5 +1,5 @@
 import * as E from "../engine";
-import type { DB } from "../types";
+import type { DB, User } from "../types";
 
 /**
  * Реестр команд. Локальный источник выполняет их над DB в браузере,
@@ -63,10 +63,22 @@ type Tail<T extends unknown[]> = T extends [unknown, ...infer R] ? R : never;
 export type ActionArgs<K extends ActionName> = Tail<Parameters<Actions[K]>>;
 export type ActionResult<K extends ActionName> = ReturnType<Actions[K]>;
 
+/** Вход через бэкенд (Supabase). У локального источника его нет — сессия хранится в браузере. */
+export interface AuthAdapter {
+  userId(): string | null;
+  subscribe(cb: () => void): () => void;
+  /** демо-ключ («u-anna») → id пользователя в этом источнике */
+  resolve(key: string): string;
+  signInAs(key: string): Promise<void>;
+  signInPhone(phone: string): Promise<User>;
+  signOut(): Promise<void>;
+}
+
 export interface DataSource {
   /** Текущий снимок данных; null — ещё не загружено */
   getSnapshot(): DB | null;
   subscribe(cb: () => void): () => void;
   run<K extends ActionName>(name: K, ...args: ActionArgs<K>): Promise<ActionResult<K>>;
   reset(): Promise<void>;
+  auth?: AuthAdapter;
 }

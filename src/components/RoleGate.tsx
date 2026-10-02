@@ -34,9 +34,7 @@ export function RoleGate({ role, children }: { role: Role; children: ReactNode }
           <div className="row wrap">
             <button
               className="btn btn--primary"
-              onClick={() => {
-                ctx!.login(need.userId);
-              }}
+              onClick={() => ctx!.login(need.userId)}
             >
               Войти как {need.label.toLowerCase()}
             </button>

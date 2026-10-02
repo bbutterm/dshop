@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { useAction, useData } from "@/lib/data/provider";
@@ -21,23 +21,23 @@ export function LoginForm() {
   const [step, setStep] = useState<"phone" | "code">("phone");
   const [code, setCode] = useState("");
 
-  // ?as=<userId> — быстрый вход из демо-ссылки «открыть в новой вкладке»
-  useEffect(() => {
-    if (!ctx?.db || !as) return;
-    const u = ctx.db.users.find((x) => x.id === as);
-    if (u) {
-      ctx.login(u.id);
-      const home = roleMeta(u.role).home;
-      router.replace(next && next.startsWith(home) ? next : home);
-    }
-  }, [ctx, as, next, router]);
-
   const digits = phone.replace(/\D/g, "");
-  const go = (userId: string, role: Parameters<typeof roleMeta>[0]) => {
-    ctx?.login(userId);
-    const home = roleMeta(role).home;
-    router.push(next && next.startsWith(home) ? next : home);
+  const go = async (userId: string) => {
+    const u = await ctx?.login(userId);
+    if (!u) return;
+    const home = roleMeta(u.role).home;
+    router.replace(next && next.startsWith(home) ? next : home);
   };
+
+  // ?as=<userId> — быстрый вход из демо-ссылки «открыть в новой вкладке»
+  const started = useRef(false);
+  const ready = !!ctx?.db;
+  useEffect(() => {
+    if (!ready || !as || started.current) return;
+    started.current = true;
+    void go(as);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, as]);
 
   return (
     <main className={styles.page}>
@@ -81,7 +81,7 @@ export function LoginForm() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 const u = await run("loginByPhone", phone);
-                if (u) go(u.id, u.role);
+                if (u) await go(u.id);
               }}
             >
               <div className="h2">Код из СМС</div>
@@ -110,9 +110,9 @@ export function LoginForm() {
         <div className="stack" style={{ ["--gap" as string]: "8px" }}>
           <div className="kicker">или демо-аккаунт</div>
           {ROLES.map((r) => {
-            const u = ctx?.db?.users.find((x) => x.id === r.userId);
+            const u = ctx?.db?.users.find((x) => x.id === ctx.idOf(r.userId));
             return (
-              <button key={r.role} className={styles.demo} onClick={() => go(r.userId, r.role)}>
+              <button key={r.role} className={styles.demo} onClick={() => go(r.userId)}>
                 <span className="grow">
                   <b>{r.label}</b>
                   <span className="tiny muted"> · {r.who}</span>

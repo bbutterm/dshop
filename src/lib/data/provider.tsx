@@ -15,6 +15,7 @@ import { DomainError } from "../engine";
 import type { DB, Notification, User } from "../types";
 import type { ActionArgs, ActionName, ActionResult, DataSource } from "./actions";
 import { LocalDataSource } from "./local";
+import { SupabaseDataSource } from "./supabase";
 
 const SESSION_KEY = "zakupka:user";
 
@@ -28,10 +29,15 @@ interface Toast {
 
 interface Ctx {
   source: DataSource;
+  /** где живут данные: в браузере или в Supabase */
+  backend: "local" | "supabase";
   db: DB | null;
   user: User | null;
-  login(userId: string): void;
-  logout(): void;
+  /** вход под демо-ключом («u-anna») или id пользователя */
+  login(userId: string): Promise<User | null>;
+  logout(): Promise<void>;
+  /** демо-ключ → id пользователя в текущем источнике */
+  idOf(key: string): string;
   toasts: Toast[];
   toast(t: Omit<Toast, "id">): void;
   dismiss(id: string): void;
@@ -39,10 +45,27 @@ interface Ctx {
 
 const DataCtx = createContext<Ctx | null>(null);
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+/** ?local=1 — принудительно демо в браузере, даже если база настроена */
+function wantsLocal() {
+  try {
+    const q = new URLSearchParams(window.location.search).get("local");
+    if (q !== null) localStorage.setItem("zakupka:local", q === "0" ? "" : "1");
+    return localStorage.getItem("zakupka:local") === "1";
+  } catch {
+    return false;
+  }
+}
+
 let singleton: DataSource | null = null;
 function getSource(): DataSource {
-  // Завтра здесь появится выбор: process.env.NEXT_PUBLIC_SUPABASE_URL ? new SupabaseDataSource() : …
-  if (!singleton) singleton = new LocalDataSource();
+  if (!singleton) {
+    singleton =
+      SUPABASE_URL && SUPABASE_KEY && !wantsLocal()
+        ? new SupabaseDataSource(SUPABASE_URL, SUPABASE_KEY)
+        : new LocalDataSource();
+  }
   return singleton;
 }
 
@@ -66,26 +89,46 @@ export function DataProvider({ children }: { children: ReactNode }) {
     () => null,
   );
   // сессия — на вкладку: в соседних вкладках можно держать разные роли
-  const userId = useSyncExternalStore(noop, readSession, () => null);
+  const auth = source?.auth;
+  const localId = useSyncExternalStore(noop, readSession, () => null);
+  const authId = useSyncExternalStore(auth?.subscribe ?? noop, () => auth?.userId() ?? null, () => null);
   const [sessionUser, setSessionUser] = useState<string | null | undefined>(undefined);
-  const effectiveId = sessionUser === undefined ? userId : sessionUser;
+  const effectiveId = auth ? authId : sessionUser === undefined ? localId : sessionUser;
   const user = db?.users.find((u) => u.id === effectiveId) ?? null;
 
-  const login = useCallback((id: string) => {
-    try {
-      sessionStorage.setItem(SESSION_KEY, id);
-      localStorage.setItem(SESSION_KEY, id);
-    } catch {}
-    setSessionUser(id);
-  }, []);
+  const toastRef = useRef<(t: Omit<Toast, "id">) => void>(() => {});
+  const idOf = useCallback((key: string) => (auth ? auth.resolve(key) : key), [auth]);
 
-  const logout = useCallback(() => {
+  const login = useCallback(
+    async (key: string): Promise<User | null> => {
+      if (auth) {
+        try {
+          await auth.signInAs(key);
+        } catch (e) {
+          toastRef.current({ title: e instanceof Error ? e.message : "Не удалось войти", tone: "error" });
+          return null;
+        }
+        const id = auth.resolve(key);
+        return source?.getSnapshot()?.users.find((u) => u.id === id) ?? null;
+      }
+      try {
+        sessionStorage.setItem(SESSION_KEY, key);
+        localStorage.setItem(SESSION_KEY, key);
+      } catch {}
+      setSessionUser(key);
+      return source?.getSnapshot()?.users.find((u) => u.id === key) ?? null;
+    },
+    [auth, source],
+  );
+
+  const logout = useCallback(async () => {
+    if (auth) return auth.signOut();
     try {
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(SESSION_KEY);
     } catch {}
     setSessionUser(null);
-  }, []);
+  }, [auth]);
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const dismiss = useCallback((id: string) => setToasts((t) => t.filter((x) => x.id !== id)), []);
@@ -97,6 +140,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     },
     [dismiss],
   );
+
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
 
   // Новые уведомления текущего пользователя показываем тостом — в том числе пришедшие из другой вкладки
   const seen = useRef<Set<string> | null>(null);
@@ -118,8 +165,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [user?.id]);
 
   const value = useMemo<Ctx | null>(
-    () => (source ? { source, db, user, login, logout, toasts, toast, dismiss } : null),
-    [source, db, user, login, logout, toasts, toast, dismiss],
+    () =>
+      source
+        ? { source, backend: auth ? "supabase" : "local", db, user, login, logout, idOf, toasts, toast, dismiss }
+        : null,
+    [source, auth, db, user, login, logout, idOf, toasts, toast, dismiss],
   );
 
   return <DataCtx.Provider value={value}>{children}</DataCtx.Provider>;

@@ -92,8 +92,8 @@ export default function ProfilePage() {
 
       <button
         className="btn btn--ghost"
-        onClick={() => {
-          logout();
+        onClick={async () => {
+          await logout();
           router.push("/login");
         }}
       >

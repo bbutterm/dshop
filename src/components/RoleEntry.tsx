@@ -19,9 +19,8 @@ export function RoleEntry() {
           <div key={r.role} className={styles.card} data-role={r.role}>
             <button
               className={styles.main}
-              onClick={() => {
-                ctx?.login(r.userId);
-                router.push(r.home);
+              onClick={async () => {
+                if (await ctx?.login(r.userId)) router.push(r.home);
               }}
             >
               <span className={styles.icon}>

@@ -39,10 +39,9 @@ export function DemoSwitch({ tone = "light" }: { tone?: "light" | "dark" }) {
             <div key={r.role} className={styles.item} data-active={current === r.role}>
               <button
                 className={styles.main}
-                onClick={() => {
-                  ctx.login(r.userId);
+                onClick={async () => {
                   setOpen(false);
-                  router.push(r.home);
+                  if (await ctx.login(r.userId)) router.push(r.home);
                 }}
               >
                 <b>{r.label}</b>
@@ -66,17 +65,21 @@ export function DemoSwitch({ tone = "light" }: { tone?: "light" | "dark" }) {
             <button
               className="btn btn--ghost btn--sm"
               onClick={async () => {
-                await ctx.source.reset();
-                ctx.toast({ title: "Демо-данные сброшены", tone: "info" });
                 setOpen(false);
+                try {
+                  await ctx.source.reset();
+                  ctx.toast({ title: "Демо-данные сброшены", tone: "info" });
+                } catch (e) {
+                  ctx.toast({ title: e instanceof Error ? e.message : "Не удалось сбросить данные", tone: "error" });
+                }
               }}
             >
               <RotateCcw size={14} /> Сбросить данные
             </button>
             <button
               className="btn btn--ghost btn--sm"
-              onClick={() => {
-                ctx.logout();
+              onClick={async () => {
+                await ctx.logout();
                 router.push("/login");
               }}
             >
