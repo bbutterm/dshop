@@ -20,14 +20,17 @@ export function LoginForm() {
   const [phone, setPhone] = useState("+7 ");
   const [step, setStep] = useState<"phone" | "code">("phone");
   const [code, setCode] = useState("");
+  const [mode, setMode] = useState<"email" | "phone">("email");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const digits = phone.replace(/\D/g, "");
-  const go = async (userId: string) => {
-    const u = await ctx?.login(userId);
+  const goHome = (u: { role: Parameters<typeof roleMeta>[0] } | null | undefined) => {
     if (!u) return;
     const home = roleMeta(u.role).home;
     router.replace(next && next.startsWith(home) ? next : home);
   };
+  const go = async (userId: string) => goHome(await ctx?.login(userId));
 
   // ?as=<userId> — быстрый вход из демо-ссылки «открыть в новой вкладке»
   const started = useRef(false);
@@ -48,7 +51,53 @@ export function LoginForm() {
         <Logo size={34} />
 
         <div className="card stack" style={{ ["--pad" as string]: "22px", ["--gap" as string]: "16px" }}>
-          {step === "phone" ? (
+          <div className="pill-tabs" role="tablist">
+            <button type="button" aria-pressed={mode === "email"} onClick={() => setMode("email")}>
+              Почта и пароль
+            </button>
+            <button type="button" aria-pressed={mode === "phone"} onClick={() => setMode("phone")}>
+              Телефон
+            </button>
+          </div>
+          {mode === "email" ? (
+            <form
+              className="stack"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                goHome(await ctx?.loginEmail(email, password));
+              }}
+            >
+              <label className="field">
+                <span>Почта</span>
+                <input
+                  id="login-email"
+                  className="input"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="username"
+                  autoCapitalize="none"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="anna@zakupka.demo"
+                />
+              </label>
+              <label className="field">
+                <span>Пароль</span>
+                <input
+                  id="login-password"
+                  className="input"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </label>
+              <button className="btn btn--primary btn--block" disabled={!email.includes("@") || !password}>
+                Войти
+              </button>
+              <p className="tiny muted">Роль определяется аккаунтом: покупатель, магазин, дистрибьютор или платформа.</p>
+            </form>
+          ) : step === "phone" ? (
             <form
               className="stack"
               onSubmit={(e) => {
@@ -108,7 +157,7 @@ export function LoginForm() {
         </div>
 
         <div className="stack" style={{ ["--gap" as string]: "8px" }}>
-          <div className="kicker">или демо-аккаунт</div>
+          <div className="kicker">или быстрый вход в демо-аккаунт</div>
           {ROLES.map((r) => {
             const u = ctx?.db?.users.find((x) => x.id === ctx.idOf(r.userId));
             return (

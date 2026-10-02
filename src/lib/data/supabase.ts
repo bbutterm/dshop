@@ -11,6 +11,7 @@ import type { ActionArgs, ActionName, ActionResult, AuthAdapter, DataSource } fr
  */
 
 /** Демо-аккаунты: ключ из seed.ts → uuid профиля (= md5('zakupka:' || ключ), см. zakupka.uid) и email */
+export const DEMO_PASSWORD_PUBLIC = "zakupka-demo-2026";
 export const DEMO_ACCOUNTS: Record<string, { id: string; email: string }> = {
   "u-anna": { id: "09621e38-c4df-4fa4-eeeb-b3682f5aba99", email: "anna@zakupka.demo" },
   "u-tatiana": { id: "0ae6410f-85f9-5593-ac33-3dff2e2dd1b8", email: "tatiana@zakupka.demo" },
@@ -244,6 +245,11 @@ export class SupabaseDataSource implements DataSource {
       if (res.error || !res.data.user) throw new DomainError("Не удалось войти по номеру");
       await this.settled();
       return this.db?.users.find((u) => u.id === this.uid) ?? (null as unknown as User);
+    },
+    signInEmail: async (email, password) => {
+      const { error } = await this.sb.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+      if (error) throw new DomainError("Неверная почта или пароль");
+      await this.settled();
     },
     signOut: async () => {
       await this.sb.auth.signOut();

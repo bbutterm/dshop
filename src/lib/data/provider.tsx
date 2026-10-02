@@ -15,7 +15,7 @@ import { DomainError } from "../engine";
 import type { DB, Notification, User } from "../types";
 import type { ActionArgs, ActionName, ActionResult, DataSource } from "./actions";
 import { LocalDataSource } from "./local";
-import { SupabaseDataSource } from "./supabase";
+import { DEMO_ACCOUNTS, DEMO_PASSWORD_PUBLIC, SupabaseDataSource } from "./supabase";
 
 const SESSION_KEY = "zakupka:user";
 
@@ -36,6 +36,8 @@ interface Ctx {
   /** вход под демо-ключом («u-anna») или id пользователя */
   login(userId: string): Promise<User | null>;
   logout(): Promise<void>;
+  /** вход по почте и паролю (демо-аккаунты) */
+  loginEmail(email: string, password: string): Promise<User | null>;
   /** демо-ключ → id пользователя в текущем источнике */
   idOf(key: string): string;
   toasts: Toast[];
@@ -121,6 +123,30 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [auth, source],
   );
 
+  const loginEmail = useCallback(
+    async (email: string, password: string): Promise<User | null> => {
+      const mail = email.trim().toLowerCase();
+      if (auth) {
+        try {
+          await auth.signInEmail(mail, password);
+        } catch (e) {
+          toastRef.current({ title: e instanceof Error ? e.message : "Не удалось войти", tone: "error" });
+          return null;
+        }
+        const id = auth.userId();
+        return source?.getSnapshot()?.users.find((u) => u.id === id) ?? null;
+      }
+      // демо в браузере: те же демо-аккаунты и пароль, что и в базе
+      const key = Object.entries(DEMO_ACCOUNTS).find(([, a]) => a.email === mail)?.[0];
+      if (!key || password !== DEMO_PASSWORD_PUBLIC) {
+        toastRef.current({ title: "Неверная почта или пароль", tone: "error" });
+        return null;
+      }
+      return login(key);
+    },
+    [auth, source, login],
+  );
+
   const logout = useCallback(async () => {
     if (auth) return auth.signOut();
     try {
@@ -167,9 +193,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Ctx | null>(
     () =>
       source
-        ? { source, backend: auth ? "supabase" : "local", db, user, login, logout, idOf, toasts, toast, dismiss }
+        ? { source, backend: auth ? "supabase" : "local", db, user, login, loginEmail, logout, idOf, toasts, toast, dismiss }
         : null,
-    [source, auth, db, user, login, logout, idOf, toasts, toast, dismiss],
+    [source, auth, db, user, login, loginEmail, logout, idOf, toasts, toast, dismiss],
   );
 
   return <DataCtx.Provider value={value}>{children}</DataCtx.Provider>;

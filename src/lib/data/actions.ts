@@ -71,6 +71,7 @@ export interface AuthAdapter {
   resolve(key: string): string;
   signInAs(key: string): Promise<void>;
   signInPhone(phone: string): Promise<User>;
+  signInEmail(email: string, password: string): Promise<void>;
   signOut(): Promise<void>;
 }
 
