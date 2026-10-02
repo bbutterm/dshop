@@ -1,6 +1,6 @@
 # «Закупка» — тестовые доступы
 
-Адрес приложения: ваш домен на Vercel (например, `https://<проект>.vercel.app`).
+Приложение: **https://dshop-kohl.vercel.app** · сценарий показа: https://dshop-kohl.vercel.app/demo · презентация: https://dshop-kohl.vercel.app/pitch
 
 ## Аккаунты
 
