@@ -134,6 +134,12 @@ export class SupabaseDataSource implements DataSource {
     this.emit();
     await this.sb.rpc("zk_ensure_profile");
     await this.reload();
+    // пустая база — заполняем демо-данными (функция ничего не удаляет и работает только на пустой базе)
+    const snap = this.getSnapshot();
+    if (snap && snap.stores.length === 0) {
+      const { data: seeded } = await this.sb.rpc("zk_demo_seed", { p_db: createSeed() });
+      if (seeded) await this.reload();
+    }
     this.listen();
   }
 
@@ -199,6 +205,9 @@ export class SupabaseDataSource implements DataSource {
 
   async reset() {
     const { error } = await this.sb.rpc("zk_demo_load", { p_db: createSeed() });
+    if (error?.code === "PGRST202") {
+      throw new DomainError("Сброс ещё не установлен: выполните supabase/manual/run_in_sql_editor.sql в SQL Editor");
+    }
     if (error) throw toError(error);
     await this.sb.rpc("zk_ensure_profile");
     await this.reload();

@@ -168,7 +168,10 @@ language sql security definer set search_path = '' as $$ select zakupka.cart_set
 create or replace function public.zk_remove_route(p_id text) returns void
 language sql security definer set search_path = '' as $$ select zakupka.remove_route(p_id) $$;
 create or replace function public.zk_demo_load(p_db jsonb) returns void
-language sql security definer set search_path = '' as $$ select zakupka.demo_load(p_db) $$;
+language sql security definer set search_path = '' as $$
+  select zakupka._seeding();
+  select zakupka.demo_load(p_db);
+$$;
 
 -- права: внутренние функции закрыты, обёртки — только вошедшим
 revoke execute on function zakupka.pay_order(text), zakupka.cart_set(text, text, int), zakupka.remove_route(text),
