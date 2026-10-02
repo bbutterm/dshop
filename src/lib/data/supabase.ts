@@ -161,7 +161,12 @@ export class SupabaseDataSource implements DataSource {
     if (!this.uid) return;
     const { data, error } = await this.sb.rpc("zk_get_snapshot");
     if (error) {
+      // база недоступна или не применены миграции — не держим экран загрузки вечно
       console.error("zk_get_snapshot", error);
+      if (!this.db) {
+        this.db = EMPTY;
+        this.emit();
+      }
       return;
     }
     this.db = data as DB;
