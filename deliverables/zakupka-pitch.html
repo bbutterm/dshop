@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Питч «Закупки»</title>
-<style>
-@font-face {
+<title>Закупка — опт у дома · презентация</title>
+<meta name="description" content="Продукты по цене дистрибьютора с выдачей в магазине у дома. Пилот в Брянске.">
+<!-- шрифты лежат рядом: презентация работает и без интернета -->
+<style>@font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;
   font-weight: 400;
@@ -225,7 +226,7 @@
   @media (max-width:760px), (max-height:460px) and (orientation:portrait){
     body{overflow:auto;background:var(--paper)}
     .deck{position:static;display:block}
-    .stage{width:auto;height:auto;transform:none!important}
+    .stage{width:100%;height:auto;transform:none!important}
     .slide{position:relative;opacity:1;visibility:visible;transform:none;border-radius:0;padding:40px 20px 56px;min-height:auto;border-bottom:1.5px solid var(--ink)}
     .slide .foot{left:20px;right:20px;bottom:18px}
     h2{font-size:32px}
@@ -238,6 +239,7 @@
     .big{font-size:56px!important}
     table{font-size:14px}
     .phone{width:220px;height:auto}
+    .shot{max-width:100%;height:auto}
     .homescreen{flex:none;width:240px;height:450px;margin:0 auto}
   }
   @media print{
@@ -251,7 +253,6 @@
 </style>
 </head>
 <body>
-
 <div class="bar" id="bar"></div>
 <div class="deck"><div class="stage" id="stage">
 
@@ -471,16 +472,55 @@
   <div class="foot"><span>Закупка</span><span>13</span></div>
 </section>
 
+<!-- 13a -->
+<section class="slide">
+  <div class="k">Бюджет запуска · без разработки и зарплат</div>
+  <h2>Пилот на 2&nbsp;месяца — <em>около 140&nbsp;тыс.&nbsp;₽</em></h2>
+  <div class="row grow" style="margin-top:26px;gap:32px;align-items:flex-start">
+    <table style="flex:1.15;font-size:15px">
+      <thead><tr><th>Закупки к запуску · разово</th><th style="text-align:right">₽</th></tr></thead>
+      <tbody>
+        <tr><td>Принтер этикеток и наклейки <span style="font-weight:400;color:var(--muted)">· дистрибьютору</span></td><td style="text-align:right">12&nbsp;000</td></tr>
+        <tr><td>Смартфон для выдачи <span style="font-weight:400;color:var(--muted)">· магазину</span></td><td style="text-align:right">12&nbsp;000</td></tr>
+        <tr><td>Стеллаж под полку выдачи</td><td style="text-align:right">8&nbsp;000</td></tr>
+        <tr><td>Пакеты для заказов</td><td style="text-align:right">4&nbsp;000</td></tr>
+        <tr><td>Листовки, наклейки, табличка</td><td style="text-align:right">15&nbsp;000</td></tr>
+        <tr><td>Юрист: оферта, договоры, персональные данные</td><td style="text-align:right">40&nbsp;000</td></tr>
+        <tr><td style="border-bottom:0">Итого разово</td><td style="text-align:right;font-weight:700;border-bottom:0">91&nbsp;000</td></tr>
+      </tbody>
+    </table>
+    <div style="flex:1;display:flex;flex-direction:column;gap:18px">
+      <table style="font-size:15px">
+        <thead><tr><th>Инфраструктура · в месяц</th><th style="text-align:right">₽</th></tr></thead>
+        <tbody>
+          <tr><td>Сервер и база в России</td><td style="text-align:right">5–10&nbsp;тыс.</td></tr>
+          <tr><td>СМС, ~1&nbsp;000 шт.</td><td style="text-align:right">5&nbsp;000</td></tr>
+          <tr><td>Домен, мониторинг, копии</td><td style="text-align:right">≈&nbsp;0</td></tr>
+          <tr><td style="border-bottom:0">2 месяца, по верхней границе</td><td style="text-align:right;font-weight:700;border-bottom:0">30&nbsp;000</td></tr>
+        </tbody>
+      </table>
+      <div class="card ink" style="padding:18px 22px">
+        <div style="display:flex;justify-content:space-between;font-size:15px"><span>Закупки + инфраструктура</span><b>121&nbsp;000</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;margin-top:6px"><span>Буфер 15&nbsp;% <span style="color:var(--muted)">(10–20&nbsp;%)</span></span><b>18&nbsp;000</b></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:10px;border-top:2px solid var(--ink)"><span style="font-weight:600">Всего</span><span class="num" style="font-size:34px;color:var(--green)">≈&nbsp;139&nbsp;000&nbsp;₽</span></div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px">при буфере 10&nbsp;% — 133&nbsp;тыс., при 20&nbsp;% — 145&nbsp;тыс.</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:14px;color:var(--muted);margin-top:14px">Эквайринг и касса — у дистрибьютора (если нет: +15–25&nbsp;тыс. ₽ ему). Магазины приложений не нужны: сервис ставится на телефон с сайта. Цены ориентировочные.</p>
+  <div class="foot"><span>Закупка</span><span>14</span></div>
+</section>
+
 <!-- 13 -->
 <section class="slide dark">
   <div class="k">Что нам нужно</div>
   <h2>Запустить пилот и&nbsp;довести MVP <em>до&nbsp;первых повторных заказов</em></h2>
   <div class="cols grow" style="grid-template-columns:repeat(3,1fr);margin-top:44px;align-items:start">
-    <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Деньги</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Бюджет на MVP и 8 недель пилота: разработка, листовки в районе, поддержка магазина.</p></div>
+    <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Деньги</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Доработка MVP и 8 недель пилота: ~140&nbsp;тыс.&nbsp;₽ на запуск и инфраструктуру с буфером плюс разработка.</p></div>
     <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Связи</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Знакомство с дистрибьюторами кондитерки и бакалеи в Брянске и Орле.</p></div>
     <div><div class="num" style="font-size:20px;color:var(--mustard-2)">Экспертиза</div><p style="margin-top:10px;font-size:17px;line-height:1.5;color:rgba(242,238,227,.82)">Юридическая проверка агентской схемы и онлайн-касс.</p></div>
   </div>
-  <div class="foot"><span>Закупка</span><span>14</span></div>
+  <div class="foot"><span>Закупка</span><span>15</span></div>
 </section>
 
 <!-- 14 -->
@@ -488,8 +528,8 @@
   <div class="logo" style="font-size:30px"><svg width="44" height="44" viewBox="0 0 32 32"><path d="M9 4h17a3 3 0 0 1 3 3v18a3 3 0 0 1-3 3H9L3 16Z" fill="#E3A82B"/><circle cx="9.5" cy="16" r="2.2" fill="#F2EEE3"/><path d="M15 11.5h9M15 16h7M15 20.5h9" stroke="#17201B" stroke-width="2.4" stroke-linecap="round"/></svg>закупка</div>
   <h1 class="big" style="font-size:88px;font-weight:800;margin-top:28px">Попробуйте сами.</h1>
   <p class="lead">Прототип открыт: пройдите сценарий показа — заказ от корзины до выдачи через все роли. С телефона его можно сразу добавить на главный экран.</p>
-  <p style="margin-top:28px"><a href="https://dshop-kohl.vercel.app/demo" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:14px;background:var(--mustard);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);color:var(--ink);font-weight:700;font-size:18px;text-decoration:none">Сценарий показа →</a> <a href="https://dshop-kohl.vercel.app" target="_blank" rel="noopener" style="margin-left:18px;color:var(--ink);font-weight:600">dshop-kohl.vercel.app</a></p>
-  <div class="foot"><span>Закупка · рабочий документ, цифры условные</span><span>15</span></div>
+  <p style="margin-top:28px"><a href="https://dshop-kohl.vercel.app/demo" style="display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:14px;background:var(--mustard);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);color:var(--ink);font-weight:700;font-size:18px;text-decoration:none">Сценарий показа →</a> <a href="https://dshop-kohl.vercel.app" style="margin-left:18px;color:var(--ink);font-weight:600">или главная прототипа</a></p>
+  <div class="foot"><span>Закупка · рабочий документ, цифры условные</span><span>16</span></div>
 </section>
 
 </div></div>
@@ -498,7 +538,7 @@
   <button id="prev" aria-label="Назад">←</button>
   <span class="counter" id="counter">1 / 0</span>
   <button id="next" aria-label="Вперёд">→</button>
-  <a href="https://dshop-kohl.vercel.app" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;padding:0 12px;opacity:.75">демо ↗</a>
+  <a href="https://dshop-kohl.vercel.app" title="Открыть прототип">демо ↗</a>
 </nav>
 
 <script>
@@ -532,6 +572,5 @@
   fit();show(i);
 })();
 </script>
-
 </body>
 </html>
